@@ -15,8 +15,7 @@ interface FormLogIn {
   selector: 'app-log-in',
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink, GoogleButtonComponent],
-  templateUrl: './log-in.component.html',
-  styles: ``
+  templateUrl: './log-in.component.html'
 })
 export default class LogInComponent {
 

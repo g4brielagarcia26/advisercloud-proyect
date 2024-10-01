@@ -8,8 +8,6 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
   {
-    // Guardia que protege la ruta, permitiendo el acceso solo si se cumplen las condiciones.
-    canActivateChild: [publicGuard()], 
     path: 'home',
     // Carga las rutas hijas desde auth.routes de forma asíncrona.
     loadChildren: () => import('./home/home.routes'), 

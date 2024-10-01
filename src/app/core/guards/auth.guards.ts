@@ -21,7 +21,7 @@ export const privateGuard = (): CanActivateFn => {
         console.log(state); // Muestra el estado de autenticación en la consola.
         // Si el estado es falso (no autenticado), redirige a la página de inicio.
         if (!state) {
-          router.navigateByUrl('/');
+          router.navigateByUrl('/home');
           return false; // Bloquea el acceso a la ruta privada.
         }
 
@@ -47,7 +47,7 @@ export const publicGuard = (): CanActivateFn => {
       map((state) => {
         // Si el estado es verdadero (autenticado), redirige a la página del usuario.
         if (state) {
-          router.navigateByUrl('/userpage');
+          router.navigateByUrl('/user');
           return false; // Bloquea el acceso a la ruta pública.
         }
 

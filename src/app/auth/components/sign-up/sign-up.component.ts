@@ -1,7 +1,7 @@
 import { Component, inject} from '@angular/core';
 import { FormBuilder, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../data-access/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterEvent, RouterLink } from '@angular/router';
 import { toast } from 'ngx-sonner';
 import { isRequired, hasEmailError } from '../../utils/validators/validators';
 import { GoogleButtonComponent } from '../google-button/google-button.component';
@@ -18,7 +18,7 @@ interface FormSignUp {
 @Component({
   selector: 'app-sign-up',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, GoogleButtonComponent],
+  imports: [ReactiveFormsModule, CommonModule, GoogleButtonComponent, RouterLink],
   templateUrl: './sign-up.component.html',
   styles: ``
 })
