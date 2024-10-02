@@ -5,6 +5,12 @@ import { Routes } from "@angular/router";
 export default [
   {
     path: '',
-    loadComponent: () => import('./home/home.component')
+    loadComponent: () => import('./shared-components/layout/layout.component'),
+    children:[
+      {
+        path:'user',
+        loadComponent: () => import('../user/user/user.component'),
+      }
+    ]
   }
 ] as Routes
