@@ -8,7 +8,7 @@ import { Component, output } from '@angular/core';
     <div class="flex justify-center mt-6">
       <!-- Botón de Google -->
       <button type="button"
-        class="flex items-center gap-x-4 py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+        class="flex items-center gap-x-4 py-2 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-600 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
         (click)="onClick.emit()">
         <!-- SVG del logo de Google -->
         <svg width="16" height="16" viewBox="0 0 256 262" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid">

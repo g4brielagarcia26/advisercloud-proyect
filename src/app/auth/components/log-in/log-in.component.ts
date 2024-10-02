@@ -27,6 +27,9 @@ export default class LogInComponent {
   private _authService = inject(AuthService); // Servicio de autenticación personalizado que maneja las acciones de autenticación.
   private _router = inject(Router); // Router para la navegación entre diferentes rutas en la aplicación.
 
+  // Flag para controlar la visibilidad de la contraseña
+  isPasswordVisible = false;
+
   /**
    * Verifica si un campo específico del formulario es requerido y no está completo.
    * @param field - El campo a verificar ('email' o 'password').
@@ -97,6 +100,11 @@ export default class LogInComponent {
     } catch (error) {
       toast.error('Ocurrió un error.'); // Muestra un mensaje de error si la autenticación falla.
     }
+  }
+
+  // Método para alternar la visibilidad de la contraseña.
+  showPassword() {
+    this.isPasswordVisible = !this.isPasswordVisible;
   }
 
 } // :)
