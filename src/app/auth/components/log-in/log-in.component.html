@@ -31,18 +31,17 @@
           }
         </div>
 
-        <!-- Campo de contraseña -->
         <form>
           <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Contraseña</label>
-          <div class="flex">
+          <div class="relative w-full">
             <input id="password" formControlName="password" [type]="isPasswordVisible ? 'text' : 'password'"
-              class="rounded-none rounded-l-lg bg-gray-50 border border-gray-300 text-gray-900 focus: block flex-1 min-w-0 w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pr-12 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Contraseña" formControlName="password">
             @if(!isPasswordVisible) {
             <span (click)="showPassword()"
-              class="inline-flex items-center outline-none focus:outline-none focus:ring-0 text-gray-900 bg-gray-200 border border-r-2 border-gray-300 rounded-r-lg dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-              <svg class="w-10 h-10 p-2 text-gray-500 dark:text-gray-50 cursor-pointer" aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+              class="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer text-gray-500 dark:text-gray-400">
+              <svg class="w-5 h-5 cursor-pointer" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor" viewBox="0 0 16 16">
                 <path
                   d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z" />
                 <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0" />
@@ -50,9 +49,9 @@
             </span>
             } @else {
             <span (click)="showPassword()"
-              class="inline-flex items-center outline-none focus:outline-none focus:ring-0 text-gray-900 bg-gray-200 border border-r-2 border-gray-300 rounded-r-lg dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-              <svg class="w-10 h-10 p-2 text-gray-500 dark:text-gray-50 cursor-pointer" aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+              class="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer text-gray-500 dark:text-gray-400">
+              <svg class="w-5 h-5 cursor-pointer" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor" viewBox="0 0 16 16">
                 <path
                   d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7 7 0 0 0-2.79.588l.77.771A6 6 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755q-.247.248-.517.486z" />
                 <path
@@ -64,13 +63,14 @@
             }
           </div>
           @if(isRequired('password')) {
-          <small class="text-red-400 font-medium">Este campo es requerido.</small>
+          <div>
+            <small class="text-red-400 font-medium">Este campo es requerido.</small>
+          </div>
           }
         </form>
 
         <!-- Botón de envío del formulario -->
-        <button 
-          type="submit"
+        <button type="submit"
           class="w-full text-white bg-emerald-600 hover:bg-emerald-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-emerald-600 dark:hover:bg-emerald-700">
           Entrar
         </button>
@@ -78,9 +78,9 @@
 
       <!-- Sección de crear cuenta -->
       <div class="text-center">
-        <p class="text-sm font-light text-gray-500 dark:text-gray-400">¿Aún no tienes cuenta? 
-          <a routerLink="/auth/sign-up" 
-             class="font-medium text-emerald-600 hover:underline dark:text-emerald-500">Crear Cuenta  
+        <p class="text-sm font-light text-gray-500 dark:text-gray-400">¿Aún no tienes cuenta?
+          <a routerLink="/auth/sign-up" class="font-medium text-emerald-600 hover:underline dark:text-emerald-500">Crear
+            Cuenta
           </a>
         </p>
       </div>

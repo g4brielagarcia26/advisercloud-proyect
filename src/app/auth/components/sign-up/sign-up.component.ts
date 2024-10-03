@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../data-access/auth.service';
-import { Router, RouterEvent, RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { toast } from 'ngx-sonner';
-import { isRequired, hasEmailError } from '../../utils/validators/validators';
+import { isRequired, hasEmailError, hasPasswordError } from '../../utils/validators/validators';
 import { GoogleButtonComponent } from '../google-button/google-button.component';
 import { CommonModule } from '@angular/common';
 
@@ -32,6 +32,9 @@ export default class SignUpComponent {
   // Flag para controlar la visibilidad de la contraseña.
   isPasswordVisible = false;
 
+  // Flag para controlar si el usuario ha intentado enviar el formulario.
+  attemptedSubmit = false;
+
   // Definición del formulario reactivo con validaciones
   form = this._formBuilder.group<FormSignUp>({
     firstName: this._formBuilder.control('', Validators.required),
@@ -48,7 +51,7 @@ export default class SignUpComponent {
         Validators.required,
         Validators.minLength(12), // Longitud mínima de 12 caracteres.
         Validators.pattern('^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{12,}$')
-      ])
+      ]),
   });
 
   // Método para verificar si un campo es requerido
@@ -61,8 +64,18 @@ export default class SignUpComponent {
     return hasEmailError(this.form); // Llama a la función hasEmailError de utilidades
   }
 
+  // Método para verificar el patrón y la longitud de la contraseña
+  validatePassword() {
+    return hasPasswordError(this.form, this.attemptedSubmit);
+  }
+
   // Método para manejar el envío del formulario
   async submit() {
+
+    // Marca que se ha intentado enviar el formulario
+    // El flag cambia a true una vez que entra en el método submit.
+    this.attemptedSubmit = true;
+
     // Verifica si el formulario es válido
     if (this.form.invalid) {
       toast.error('Por favor, completa todos los campos correctamente.'); // Mensaje de error si hay campos inválidos

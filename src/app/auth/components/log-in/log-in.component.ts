@@ -29,7 +29,7 @@ export default class LogInComponent {
 
   // Flag para controlar la visibilidad de la contraseña
   isPasswordVisible = false;
-
+  
   /**
    * Verifica si un campo específico del formulario es requerido y no está completo.
    * @param field - El campo a verificar ('email' o 'password').
@@ -49,11 +49,19 @@ export default class LogInComponent {
 
   // Definición del formulario reactivo con los campos 'email' y 'password'.
   form = this._formBuilder.group<FormLogIn>({
-    email: this._formBuilder.control('', [
-      Validators.required, // El campo de correo es obligatorio.
-      Validators.email,    // El correo debe tener un formato válido.
-    ]),
-    password: this._formBuilder.control('', Validators.required), // El campo de contraseña es obligatorio.
+    email: this._formBuilder.control(
+      '',
+      [
+        Validators.required, // El campo no puede estar vacío.
+        Validators.email // Formato de correo@correo.com
+      ]),
+    password: this._formBuilder.control(
+      '',
+      [
+        Validators.required,
+        Validators.minLength(12), // Longitud mínima de 12 caracteres.
+        Validators.pattern('^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{12,}$')
+      ])
   });
 
   /**
@@ -63,7 +71,9 @@ export default class LogInComponent {
    * Si ocurre un error, muestra una notificación al usuario.
    */
   async submit() {
-    if (this.form.invalid) return; // Si el formulario es inválido, se detiene la ejecución.
+
+    // Si el formulario es inválido, se detiene la ejecución.
+    if (this.form.invalid) return; 
 
     try {
       // Extrae el email y password del formulario.
