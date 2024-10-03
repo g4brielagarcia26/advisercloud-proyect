@@ -1,11 +1,12 @@
-import { Component, inject } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthStateService } from '../../../shared/data-access/auth-state.service';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink,NgClass],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
@@ -45,4 +46,30 @@ userLogOut() {
     console.error("Error al cerrar sesión:", error); // Maneja errores en la consola si ocurre alguno.
   });
 }
+
+
+// Inicializa la variable isDropdownOpen como false, indicando que el dropdown está cerrado por defecto.
+isDropdownOpen = false;
+
+// Método para alternar el estado del dropdown.
+toggleDropdown() {
+  // Cambia el estado de isDropdownOpen: si está true, lo pone en false y viceversa.
+  this.isDropdownOpen = !this.isDropdownOpen;
+}
+
+// Escucha eventos de clic en el documento.
+@HostListener('document:click', ['$event'])
+onClick(event: MouseEvent) {
+  // Obtiene el elemento que fue clicado.
+  const target = event.target as HTMLElement;
+
+  // Verifica si el elemento clicado está dentro de un contenedor con la clase 'relative'.
+  const clickedInside = target.closest('.relative');
+
+  // Si no se clicó dentro del contenedor, cierra el dropdown.
+  if (!clickedInside) {
+    this.isDropdownOpen = false;
+  }
+}
+
 }
