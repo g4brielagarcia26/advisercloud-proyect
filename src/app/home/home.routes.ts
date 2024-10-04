@@ -10,11 +10,7 @@ export default [
       {
         path:'tool-panel',
         loadComponent: () => import('./tools/tool-panel/tool-panel.component')
-      },
-      {
-        path:'user',
-        loadComponent: () => import('../user/user/user.component'),
-      },
+      }
     ]
   }
 ] as Routes

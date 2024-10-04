@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, UserCredential } from '@angular/fire/auth';
+import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, 
+        signInWithPopup, GoogleAuthProvider, UserCredential, sendEmailVerification } from '@angular/fire/auth';
 import { collection, doc, Firestore, getDocs, query, setDoc, where } from '@angular/fire/firestore';
 
 // Definimos nuestra interfaz "User", que será utilizada para estructurar los datos del usuario.
@@ -103,4 +104,19 @@ export class AuthService {
     return !querySnapshot.empty;
   }
 
+   /**
+   * Método para enviar un correo de verificación al usuario.
+   * @returns Una promesa que se resuelve cuando el correo es enviado.
+   */
+   async sendVerificationEmail(): Promise<void> {
+    // Obtenemos el usuario autenticado actualmente
+    const user = this._auth.currentUser;
+
+    // Verifica que exista un usuario autenticado antes de enviar el correo
+    if (user) {
+      await sendEmailVerification(user);
+    } else {
+      throw new Error('No se encontró ningún usuario con estos datos.');
+    }
+  }
 } // :)
