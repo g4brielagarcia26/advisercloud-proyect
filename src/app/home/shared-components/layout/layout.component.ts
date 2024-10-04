@@ -12,5 +12,5 @@ import { FooterComponent } from '../footer/footer.component';
   styleUrl: './layout.component.css'
 })
 export default class LayoutComponent {
-
+  isDropdownSideOpen = true;
 }

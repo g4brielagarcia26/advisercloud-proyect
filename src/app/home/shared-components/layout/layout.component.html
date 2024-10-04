@@ -1,21 +1,19 @@
-
-<!-- Contenedor Header -->
-<section>
-  <app-header/>
-</section>
-
-<!-- Contenedor Sidebar -->
-  <section class="h-full w-full max-w-[20rem]">
-    <app-sidebar/>
+<div
+  class="grid grid-cols-[200px_minmax(300px,_1fr)] grid-rows-[60px_minmax(300px,_1fr)_50px] gap-1 h-screen"
+>
+  <!-- Contenedor Header -->
+  <section class="col-span-2">
+    <app-header />
   </section>
 
-<!-- Contenedor Panel Central -->
-  <section>
+  <!-- Contenedor Panel Central -->
+
+  <section class="col-start-2 row-start-2">
     <router-outlet></router-outlet>
   </section>
 
-<!-- Contenedor Footer -->
-  <section>
-    <app-footer/>
+  <!-- Contenedor Footer -->
+  <section class="col-span-2 row-start-3">
+    <app-footer />
   </section>
-
+</div>

@@ -1,12 +1,14 @@
 import { Component, HostListener } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthStateService } from '../../../shared/data-access/auth-state.service';
 import { NgClass } from '@angular/common';
+import { SidebarComponent } from "../sidebar/sidebar.component";
+import { HomeServicesService } from '../../services/home-services.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink,NgClass],
+  imports: [RouterOutlet,RouterLink, NgClass, SidebarComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
@@ -48,13 +50,14 @@ userLogOut() {
 }
 
 
-// Inicializa la variable isDropdownOpen como false, indicando que el dropdown está cerrado por defecto.
-isDropdownOpen = false;
+
+// Inicializa la variable isDropdownUserOpen como false, indicando que el dropdown del usuario está cerrado por defecto.
+isDropdownUserOpen = false;
 
 // Método para alternar el estado del dropdown.
-toggleDropdown() {
-  // Cambia el estado de isDropdownOpen: si está true, lo pone en false y viceversa.
-  this.isDropdownOpen = !this.isDropdownOpen;
+toggleUserDropdown() {
+  // Cambia el estado de isDropdownUserOpen: si está true, lo pone en false y viceversa.
+  this.isDropdownUserOpen = !this.isDropdownUserOpen;
 }
 
 // Escucha eventos de clic en el documento.
@@ -63,13 +66,21 @@ onClick(event: MouseEvent) {
   // Obtiene el elemento que fue clicado.
   const target = event.target as HTMLElement;
 
-  // Verifica si el elemento clicado está dentro de un contenedor con la clase 'relative'.
-  const clickedInside = target.closest('.relative');
+  // Verifica si el elemento clicado está dentro de un contenedor con id #user.
+  const clickedInside = target.closest('#user');
 
   // Si no se clicó dentro del contenedor, cierra el dropdown.
   if (!clickedInside) {
-    this.isDropdownOpen = false;
+    this.isDropdownUserOpen = false;
   }
 }
+
+//La misma operación anterior con el dropdown de Sidebar, sin el escuchardor de eventos del documento, para que no se cierre al clicar fuera del contenedor
+ isDropdownSideOpen = true;
+
+toggleSideDropdown(){
+this.isDropdownSideOpen = !this.isDropdownSideOpen;
+} 
+
 
 }
