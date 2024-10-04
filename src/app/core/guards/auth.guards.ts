@@ -24,7 +24,6 @@ export const privateGuard = (): CanActivateFn => {
           router.navigateByUrl('/home');
           return false; // Bloquea el acceso a la ruta privada.
         }
-
         return true; // Permite el acceso a la ruta.
       })
     );
@@ -45,9 +44,9 @@ export const publicGuard = (): CanActivateFn => {
     // Escucha el estado de autenticación y mapea el resultado.
     return authState.authState$.pipe(
       map((state) => {
-        // Si el estado es verdadero (autenticado), redirige a la página del usuario.
+        // Si el estado es verdadero (autenticado), redirige a la página de inicio, (con los "permisos" del usuario autenticado)
         if (state) {
-          router.navigateByUrl('/user');
+          router.navigateByUrl('/home');
           return false; // Bloquea el acceso a la ruta pública.
         }
 

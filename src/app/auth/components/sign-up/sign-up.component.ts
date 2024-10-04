@@ -100,7 +100,14 @@ export default class SignUpComponent {
       // Intenta registrar al usuario utilizando el servicio de autenticación
       await this._authService.signUp({ firstName, lastName, email, password });
       toast.success('Usuario creado correctamente.'); // Mensaje de éxito
-      this._router.navigateByUrl('/home'); // Redirige al usuario a la página de tareas
+
+      // Envía el correo de verificación
+    await this._authService.sendVerificationEmail();
+    toast.success('Correo de verificación enviado.');
+
+    // Redirige al componente de verificación de correo
+    this._router.navigateByUrl('/auth/send-email');
+
     } catch (error) {
       // Manejo de errores al intentar registrar al usuario
       toast.error((error as Error).message || 'Ocurrió un error al crear el usuario.');

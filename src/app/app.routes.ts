@@ -14,14 +14,14 @@ export const routes: Routes = [
   },
   {
     // Guardia que protege la ruta, permitiendo el acceso solo si se cumplen las condiciones.
-    canActivateChild: [publicGuard()], 
+    canActivate: [publicGuard()], 
     path: 'auth',
     // Carga las rutas hijas desde auth.routes de forma asíncrona.
     loadChildren: () => import('./auth/components/auth.routes'), 
   },
   {
     // Guardia privado.
-    canActivateChild: [privateGuard()], 
+    canActivate: [privateGuard()], 
     path: 'user',
     // Carga las rutas hijas desde userpage.routes de forma asíncrona.
     loadChildren: () => import('./user/user.routes'), 
