@@ -1,6 +1,8 @@
 import { inject, Injectable } from '@angular/core';
-import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, 
-        signInWithPopup, GoogleAuthProvider, UserCredential, sendEmailVerification } from '@angular/fire/auth';
+import {
+  Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  signInWithPopup, GoogleAuthProvider, UserCredential, sendEmailVerification
+} from '@angular/fire/auth';
 import { collection, doc, Firestore, getDocs, query, setDoc, where } from '@angular/fire/firestore';
 
 // Definimos nuestra interfaz "User", que será utilizada para estructurar los datos del usuario.
@@ -64,14 +66,34 @@ export class AuthService {
    * @param user - Objeto que contiene el correo electrónico y la contraseña del usuario.
    * @returns Una promesa que resuelve con las credenciales del usuario que ha iniciado sesión.
    */
-  signIn(user: Pick<User, 'email' | 'password'>) {
-    // Llamada a Firebase Authentication para iniciar sesión utilizando el correo y la contraseña proporcionados.
-    return signInWithEmailAndPassword(
-      this._auth,
-      user.email,
-      user.password
-    );
+  async signIn(user: Pick<User, 'email' | 'password'>) {
+
+    try {
+      // Iniciar sesión con email y contraseña
+      const userCredential = await signInWithEmailAndPassword(this._auth, user.email, user.password);
+
+      // Obtener el usuario autenticado
+      const currentUser = userCredential.user;
+
+      // Verificar si el correo ha sido verificado
+      if (!currentUser.emailVerified) {
+        // Si el correo no está verificado, lanza un error
+        throw new Error('Correo no verificado.');
+      }
+
+      // Si el correo está verificado, retornar las credenciales
+      return userCredential;
+
+    } catch (error: any) {
+      // Manejar error de contraseña incorrecta de Firebase
+      if (error.code === 'auth/invalid-credential') {
+        throw new Error('Credenciales incorrectas.');
+      }
+      // Reenvía el mensaje de error desde Firebase 
+      throw new Error(error.message || 'Error en la autenticación.');
+    }
   }
+
 
   /**
    * Método para iniciar sesión utilizando la autenticación de Google (OAuth).
@@ -80,7 +102,7 @@ export class AuthService {
   singInWithGoogle() {
     // Proveedor de autenticación de Google.
     const provider = new GoogleAuthProvider();
-    
+
     // Llamada a Firebase Authentication para iniciar sesión con el popup de Google.
     return signInWithPopup(this._auth, provider);
   }
@@ -104,11 +126,11 @@ export class AuthService {
     return !querySnapshot.empty;
   }
 
-   /**
-   * Método para enviar un correo de verificación al usuario.
-   * @returns Una promesa que se resuelve cuando el correo es enviado.
-   */
-   async sendVerificationEmail(): Promise<void> {
+  /**
+  * Método para enviar un correo de verificación al usuario.
+  * @returns Una promesa que se resuelve cuando el correo es enviado.
+  */
+  async sendVerificationEmail(): Promise<void> {
     // Obtenemos el usuario autenticado actualmente
     const user = this._auth.currentUser;
 

@@ -5,6 +5,7 @@ import { AuthService } from '../../data-access/auth.service';
 import { Router, RouterLink } from '@angular/router';
 import { toast } from 'ngx-sonner';
 import { GoogleButtonComponent } from '../google-button/google-button.component';
+import { async } from 'rxjs';
 
 interface FormLogIn {
   email: FormControl<string | null>;
@@ -29,7 +30,7 @@ export default class LogInComponent {
 
   // Flag para controlar la visibilidad de la contraseña
   isPasswordVisible = false;
-  
+
   /**
    * Verifica si un campo específico del formulario es requerido y no está completo.
    * @param field - El campo a verificar ('email' o 'password').
@@ -72,26 +73,37 @@ export default class LogInComponent {
    */
   async submit() {
 
-    // Si el formulario es inválido, se detiene la ejecución.
-    if (this.form.invalid) return; 
+    // Si el formulario es inválido, mostrar mensaje de error y detener la ejecución.
+    if (this.form.invalid) {
+      toast.error('Formulario inválido. Por favor completa todos los campos correctamente.');
+      return;
+    }
+
+    // Extrae el email y password del formulario.
+    const { email, password } = this.form.value;
+
+    // Si faltan el email o la contraseña, mostrar un mensaje de error y detener el envío.
+    if (!email || !password) return;
 
     try {
-      // Extrae el email y password del formulario.
-      const { email, password } = this.form.value;
-
-      // Si faltan el email o la contraseña, no se realiza el envío.
-      if (!email || !password) return;
-
-      // (Opcional) Imprime las credenciales en la consola.
-      console.log({ email, password });
-
       // Llama al servicio de autenticación para iniciar sesión.
       await this._authService.signIn({ email, password });
 
-      toast.success('¡Hola nuevamente!'); // Muestra un mensaje de éxito usando `ngx-sonner`.
-      this._router.navigateByUrl('/home'); // Redirige al usuario a la página principal.
-    } catch (error) {
-      toast.error('Ocurrió un error al iniciar sesión'); // Muestra un mensaje de error en caso de fallo.
+      // Si el inicio de sesión es exitoso, navegar a la página principal
+      toast.success('¡Bienvenido nuevamente!');
+      this._router.navigateByUrl('/home');
+
+    } catch (error: any) {
+      // Si el error es relacionado con la verificación de correo, mostrar un mensaje específico
+      if (error.message === 'Correo no verificado.') {
+        toast.error('Correo no verificado. Por favor verifica tu cuenta antes de iniciar sesión.');
+        // Si la contraseña es incorrecta
+      } else if (error.message === 'Credenciales incorrectas.') {
+        toast.error('El correo o contraseña no son correctos.');
+        // Manejar cualquier otro error (genérico o inesperado)
+      } else {
+        toast.error(error.message || 'Ocurrió un error al iniciar sesión');
+      }
     }
   }
 
