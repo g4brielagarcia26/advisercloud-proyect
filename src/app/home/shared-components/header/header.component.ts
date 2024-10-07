@@ -1,9 +1,9 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, inject } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthStateService } from '../../../shared/data-access/auth-state.service';
 import { NgClass } from '@angular/common';
 import { SidebarComponent } from "../sidebar/sidebar.component";
-import { HomeServicesService } from '../../services/home-services.service';
+import { HomeService } from '../../services/home.service';
 
 @Component({
   selector: 'app-header',
@@ -75,12 +75,7 @@ onClick(event: MouseEvent) {
   }
 }
 
-//La misma operación anterior con el dropdown de Sidebar, sin el escuchardor de eventos del documento, para que no se cierre al clicar fuera del contenedor
- isDropdownSideOpen = true;
-
-toggleSideDropdown(){
-this.isDropdownSideOpen = !this.isDropdownSideOpen;
-} 
-
+// Se inyecta el servicio HomeService 
+Dropdown = inject(HomeService)
 
 }

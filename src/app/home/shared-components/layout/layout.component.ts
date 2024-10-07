@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
+import { HomeService } from '../../services/home.service';
 
 @Component({
   selector: 'app-layout',
@@ -12,5 +13,5 @@ import { FooterComponent } from '../footer/footer.component';
   styleUrl: './layout.component.css'
 })
 export default class LayoutComponent {
-  isDropdownSideOpen = true;
+  Dropdown = inject(HomeService)
 }

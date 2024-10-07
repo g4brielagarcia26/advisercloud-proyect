@@ -1,19 +1,29 @@
 <div
-  class="grid grid-cols-[200px_minmax(300px,_1fr)] grid-rows-[60px_minmax(300px,_1fr)_50px] gap-1 h-screen"
+  class="grid grid-cols-[200px_minmax(auto,_1fr)] grid-rows-[80px_minmax(auto,_1fr)_50px] h-screen w-auto"
 >
   <!-- Contenedor Header -->
   <section class="col-span-2">
     <app-header />
   </section>
 
-  <!-- Contenedor Panel Central -->
+  <section class="absolute h-[calc(100vh-80px)]">
+    <app-sidebar></app-sidebar>
+  </section>
 
-  <section class="col-start-2 row-start-2">
+  <!-- Contenedor Panel Central -->
+  @if (Dropdown.isDropdownSideOpen) {
+  <section class="row-start-2">
     <router-outlet></router-outlet>
   </section>
+  }
+   <!-- @else {
+  <section class="col-span-2 row-start-2">
+    <router-outlet></router-outlet>
+  </section>
+  } -->
 
   <!-- Contenedor Footer -->
-  <section class="col-span-2 row-start-3">
+  <!-- <section class="col-span-2 row-start-3">
     <app-footer />
-  </section>
+  </section> -->
 </div>
