@@ -69,6 +69,10 @@ export default class SignUpComponent {
     return hasPasswordError(this.form, this.attemptedSubmit);
   }
 
+  // submit() {
+  //   this._router.navigateByUrl('/auth/send-email');
+  // }
+
   // Método para manejar el envío del formulario
   async submit() {
 
