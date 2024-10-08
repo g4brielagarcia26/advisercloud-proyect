@@ -1,29 +1,27 @@
-<div
-  class="grid grid-cols-[200px_minmax(auto,_1fr)] grid-rows-[80px_minmax(auto,_1fr)_50px] h-screen w-auto"
->
-  <!-- Contenedor Header -->
-  <section class="col-span-2">
-    <app-header />
+<div class="layout" [class.sidebar-hidden]="!isSidebarVisible">
+
+  <!-- Header -->
+  <header 
+    class="header bg-gray-50 shadow-md"
+    >
+    <!-- Aquí escuchamos el evento desde el HeaderComponent -->
+    <app-header (toggleSidebar)="toggleSidebar()"></app-header>
+  </header>
+
+  <!-- Barra lateral -->
+   @if(isSidebarVisible) {
+    <aside class="sidebar bg-emerald-500">
+      <app-sidebar></app-sidebar>
+    </aside>
+   }
+  
+  <!-- Contenedor principal -->
+  <section class="content">
+    <router-outlet />
   </section>
 
-  <section class="absolute h-[calc(100vh-80px)]">
-    <app-sidebar></app-sidebar>
-  </section>
-
-  <!-- Contenedor Panel Central -->
-  @if (Dropdown.isDropdownSideOpen) {
-  <section class="row-start-2">
-    <router-outlet></router-outlet>
-  </section>
-  }
-   <!-- @else {
-  <section class="col-span-2 row-start-2">
-    <router-outlet></router-outlet>
-  </section>
-  } -->
-
-  <!-- Contenedor Footer -->
-  <!-- <section class="col-span-2 row-start-3">
+  <!-- Footer -->
+  <footer class="footer bg-gray-50">
     <app-footer />
-  </section> -->
+  </footer>
 </div>
