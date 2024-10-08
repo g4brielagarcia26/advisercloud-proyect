@@ -2,11 +2,13 @@ import { Component, Inject, inject } from '@angular/core';
 import { Router, RouterOutlet, RouterLink} from '@angular/router';
 import { AuthStateService } from './shared/data-access/auth-state.service';
 import { NgxSonnerToaster } from 'ngx-sonner';
+import ToolPanelComponent from "./home/tools/tool-panel/tool-panel.component";
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NgxSonnerToaster, RouterLink],
+  imports: [RouterOutlet, NgxSonnerToaster, RouterLink, ToolPanelComponent, CommonModule],
   templateUrl: './app.component.html'
 })
 export class AppComponent {

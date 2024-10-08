@@ -1,1 +1,13 @@
-<p>tool-panel works!</p>
+<div>
+    <h3>Tool Panel</h3>
+  
+    <!-- ToolBoxComponent emite el evento toolSelected -->
+    <app-tool-box (toolSelected)="onToolSelected($event)"></app-tool-box>
+  
+      
+    <div *ngIf="selectedTool"> <!-- Si selectedTool no es null, se mostrará esta sección -->
+        <!-- Se muestra el nombre, descripción y precio de la herramienta seleccionada -->
+      <h4>Herramienta Seleccionada:</h4>
+      <p><strong>{{ selectedTool.name }}</strong>: {{ selectedTool.description }} - Precio: {{ selectedTool.price | currency:'USD' }}</p>
+    </div>
+  </div>
