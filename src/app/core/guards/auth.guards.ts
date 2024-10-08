@@ -1,13 +1,12 @@
-import { inject } from "@angular/core";
-import { CanActivateFn, Router } from "@angular/router";
-import { AuthStateService } from "../../shared/data-access/auth-state.service";
-import { map } from "rxjs";
-
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
+import { AuthStateService } from '../../shared/data-access/auth-state.service';
+import { map } from 'rxjs';
 
 /**
  * Guard que verifica si el usuario está autenticado.
  * Si el usuario no está autenticado, redirige a la página de inicio.
- * 
+ *
  * @returns Función que se puede utilizar como guard para rutas.
  */
 export const privateGuard = (): CanActivateFn => {
@@ -33,7 +32,7 @@ export const privateGuard = (): CanActivateFn => {
 /**
  * Guard que verifica si el usuario no está autenticado.
  * Si el usuario ya está autenticado, redirige a la página del usuario.
- * 
+ *
  * @returns Función que se puede utilizar como guard para rutas.
  */
 export const publicGuard = (): CanActivateFn => {
@@ -44,8 +43,13 @@ export const publicGuard = (): CanActivateFn => {
     // Escucha el estado de autenticación y mapea el resultado.
     return authState.authState$.pipe(
       map((state) => {
-        // Si el estado es verdadero (autenticado), redirige a la página de inicio, (con los "permisos" del usuario autenticado)
-        if (state) {
+      // Si el estado es verdadero (autenticado)
+        if (state && !state.emailVerified) {
+           // Si el usuario está autenticado pero no ha verificado su correo
+          router.navigateByUrl('send-email'); // Redirige a la página de verificación
+          return false;// Bloquea el acceso a la ruta.
+        } else if (state) {
+          // Si el usuario está autenticado y ha verificado su correo
           router.navigateByUrl('/home');
           return false; // Bloquea el acceso a la ruta pública.
         }

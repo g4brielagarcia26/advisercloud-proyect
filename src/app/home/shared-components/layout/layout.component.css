@@ -1,0 +1,36 @@
+/* Layout con sidebar visible */
+.layout {
+  width: 100%;
+  height: auto;
+  display: grid;
+  grid-template-areas:
+  "aside header header header"
+  "aside content content content"
+  "footer footer footer footer"
+  ;
+  grid-template-rows: 60px auto 30px;
+  grid-template-columns: 250px 1fr 1fr 1fr;
+}
+
+.header {
+  grid-area: header;
+  width: 100%;
+}
+
+.sidebar {
+  grid-area: aside;
+}
+
+.content {
+  grid-area: content;
+  height: 100vh;
+}
+
+.footer {
+  grid-area: footer;
+}
+
+/* Oculta el ancho de la barra lateral */
+.sidebar-hidden {
+  grid-template-columns: 0px 1fr 1fr 1fr; /* Columna aside de tamaño 0 */
+}
