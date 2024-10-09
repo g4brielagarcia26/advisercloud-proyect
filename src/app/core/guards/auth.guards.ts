@@ -44,16 +44,11 @@ export const publicGuard = (): CanActivateFn => {
     return authState.authState$.pipe(
       map((state) => {
       // Si el estado es verdadero (autenticado)
-        if (state && !state.emailVerified) {
-           // Si el usuario está autenticado pero no ha verificado su correo
-          router.navigateByUrl('send-email'); // Redirige a la página de verificación
-          return false;// Bloquea el acceso a la ruta.
-        } else if (state) {
-          // Si el usuario está autenticado y ha verificado su correo
+      // Si el usuario está autenticado y ha verificado su correo
+        if (state) {
           router.navigateByUrl('/home');
           return false; // Bloquea el acceso a la ruta pública.
         }
-
         return true; // Permite el acceso a la ruta.
       })
     );

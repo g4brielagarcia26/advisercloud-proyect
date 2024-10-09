@@ -9,6 +9,7 @@ import { isRequired, hasEmailError } from '../../utils/validators/validators';
 import { AuthService } from '../../data-access/auth.service';
 import { RouterLink } from '@angular/router';
 import { toast } from 'ngx-sonner';
+import { Firestore ,doc, getDoc } from '@angular/fire/firestore';
 
 interface FormResetPassword {
   email: FormControl<string | null>;
@@ -59,8 +60,22 @@ export default class ForgotPasswordComponent {
       toast.error('El email no está registrado');
       return;
     }
-
     try {
+    // Obtener el documento del usuario desde Firestore usando el email
+    // const userDocRef = doc(this._firestore, `users/${email}`);
+    // const userDoc = await getDoc(userDocRef);
+
+    // if (!userDoc.exists()) {
+    //   toast.error('Este correo no está registrado');
+    //   return;
+    // }
+
+    // const userData = userDoc.data();
+
+    // if (userData['authMethod'] === 'google') {
+    //   toast.error('Este usuario está registrado con Google. No se puede restablecer la contraseña');
+    //   return;
+    // }
       //Llamada al método para restablecer la contraseña
       await this._authService.sendPasswordResetEmail(email);
       toast.success(
@@ -72,4 +87,5 @@ export default class ForgotPasswordComponent {
       );
     }
   }
+  private _firestore = inject (Firestore)
 }

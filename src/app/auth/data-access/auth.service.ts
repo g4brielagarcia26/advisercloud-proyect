@@ -8,6 +8,7 @@ import {
   UserCredential,
   sendEmailVerification,
   sendPasswordResetEmail,
+  user,
 } from '@angular/fire/auth';
 import {
   collection,
@@ -58,6 +59,7 @@ export class AuthService {
         email: user.email, // Correo electrónico del usuario
         firstName: user.firstName, // Primer nombre del usuario
         lastName: user.lastName, // Apellido del usuario
+        authMethod: 'email', //Método con el que se ha autenticado el usuario
         createdAt: new Date(), // Fecha de creación del registro del usuario
       };
 
@@ -89,7 +91,6 @@ export class AuthService {
       // Obtener el usuario autenticado
       const currentUser = userCredential.user;
 
-
       // Verificar si el correo ha sido verificado
       if (!currentUser.emailVerified) {
         // Si el correo no está verificado, lanza un error
@@ -112,12 +113,33 @@ export class AuthService {
    * Método para iniciar sesión utilizando la autenticación de Google (OAuth).
    * @returns Una promesa que resuelve con las credenciales del usuario que ha iniciado sesión mediante Google.
    */
-  singInWithGoogle() {
-    // Proveedor de autenticación de Google.
-    const provider = new GoogleAuthProvider();
+  async singInWithGoogle(): Promise<UserCredential> {
+    try {
+      // Proveedor de autenticación de Google.
+      const provider = new GoogleAuthProvider();
+      // Llamada a Firebase Authentication para iniciar sesión con el popup de Google.
+      const UserCredential = await signInWithPopup(this._auth, provider);
+      // Obtener el UID (Identificador Único) del usuario autenticado.
+      const uid = UserCredential.user?.uid;
+      // Estructuramos los datos del usuario que queremos guardar en Firestore, incluyendo el correo y los nombres.
+      const userData = {
+        uid, // UID del usuario proporcionado por Firebase Authentication
+        email: UserCredential.user?.email, // Correo electrónico del usuario
+        displayName: UserCredential.user?.displayName, //Nombre completo del usuario
+        authMethod:'google', //Método con el que se ha autenticado el usuario
+        createdAt: new Date(), // Fecha de creación del registro del usuario
+      };
 
-    // Llamada a Firebase Authentication para iniciar sesión con el popup de Google.
-    return signInWithPopup(this._auth, provider);
+      // Guardamos el objeto "userData" en Firestore bajo la colección "users", utilizando el UID como ID del documento.
+      await setDoc(doc(this._firestore, `users/${uid}`), userData);
+
+      // Devolver las credenciales del usuario autenticado.
+      return UserCredential
+
+    } catch (error) {
+      // En caso de error, lanzar un mensaje detallado con el error ocurrido durante el inicio de sesión con Google.
+      throw new Error('Error al iniciar sesión con Google: ' + (error as Error).message);
+    }
   }
 
   /**
@@ -160,11 +182,11 @@ export class AuthService {
    */
   async sendPasswordResetEmail(email: string): Promise<void> {
     try {
-      await sendPasswordResetEmail(this._auth,email);
-      
+
+      await sendPasswordResetEmail(this._auth, email);
+
     } catch (error) {
       throw new Error('Error en submit');
-      
-    } 
+    }
   }
 } // :)

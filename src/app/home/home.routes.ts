@@ -1,5 +1,4 @@
 import { Routes } from "@angular/router";
-import { privateGuard } from "../core/guards/auth.guards";
 
 // Aquí definimos todas las rutas del Home.
 
