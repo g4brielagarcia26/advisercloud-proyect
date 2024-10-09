@@ -1,0 +1,6 @@
+.tool-container {
+    display: flex; /* Mantiene las tarjetas en una fila */
+    flex-wrap: wrap; /* Permite que las tarjetas se ajusten en varias filas si no hay suficiente espacio */
+    gap: 20px; /* Espacio entre las tarjetas */
+    justify-content: center; /* Centra las tarjetas en la línea */
+  }

@@ -2,7 +2,7 @@
 
 //Es una plantilla para las herramientas que usaremos
 export interface ToolModel {
-    id: number;
+    id: string;
     name: string;
     description: string;
     price: number
