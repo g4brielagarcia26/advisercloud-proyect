@@ -1,7 +1,9 @@
-<div *ngFor="let tool of toolList">
-    <div class="tool-card">
-      <h2>{{ tool.name }}</h2>
+<div>
+  <div class="tool-container">
+    <div *ngFor="let tool of tools | async" class="tool-card">
+      <strong>{{ tool.name }}</strong>
       <p>{{ tool.description }}</p>
-      <p>Precio: ${{ tool.price }}</p>
-      </div>
+      <p>Precio: {{ tool.price }} € </p>
+    </div>
   </div>
+</div>

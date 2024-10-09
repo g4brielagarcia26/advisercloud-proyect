@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ToolModel } from '../tool-model/tool.model';
+import { ToolService } from '../tool-service/tool-service'; 
+import { Observable } from 'rxjs';
 
 
 @Component({
@@ -13,24 +15,9 @@ import { ToolModel } from '../tool-model/tool.model';
 
 
 export class ToolBoxComponent {
+  tools: Observable<ToolModel[]>; // Esta variable almacenará las herramientas de Firestore.
 
-
-  @Output() toolSelected = new EventEmitter<ToolModel>();  // Define un evento de salida (Output) llamado toolSelected, que emitirá datos del tipo ToolModel. 
-  // Esto permitirá que el componente padre pueda "escuchar" cuando se seleccione una herramienta.
-
-
-  //Lista de Herramientas de Prueba
-  toolList: ToolModel[] = [
-    { id: 1, name: 'Visual Studio Code', description: 'IDE creado por Microsoft', price: 0 },
-    { id: 2, name: 'Google Chrome', description: 'Navegador creado por Google', price: 0 },
-    { id: 3, name: 'Skype', description: 'Software de comunicaciones propietario distribuido por Microsoft', price: 0 },
-    // ... otras posibles herramientas
-  ];
-
-   // Función que se ejecuta cuando se selecciona una herramienta.
-  // Recibe como parámetro un objeto de tipo ToolModel (la herramienta seleccionada) y emite el evento toolSelected con esta herramienta.
-  selectTool(Tool: ToolModel) {
-    this.toolSelected.emit(Tool);
+  constructor(private toolService: ToolService) {
+    this.tools = this.toolService.getTools(); // Usar el servicio ToolService para obtener los datos de las herramientas
   }
-
 }
