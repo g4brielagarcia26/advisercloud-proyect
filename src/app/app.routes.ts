@@ -4,7 +4,7 @@ import { publicGuard, privateGuard } from './core/guards/auth.guards';
 export const routes: Routes = [
   {
     path: '', // Ruta vacía redirige a Home
-    redirectTo: 'home',
+    redirectTo: 'home/tool-panel',
     pathMatch: 'full',
   },
   {
@@ -30,6 +30,6 @@ export const routes: Routes = [
     //  Ruta "comodin" que se utiliza para capturar cualquier ruta que no exista.
     path: '**', 
     // Redirige a la ruta vacía, que a su vez redirige a localhost:4200/home.
-    redirectTo: 'home',
+    redirectTo: 'home/tool-panel',
   }
 ];

@@ -14,6 +14,8 @@ import { SidebarComponent } from "../sidebar/sidebar.component";
 export class HeaderComponent {
   // Emitimos el evento hacia nuestro componente Layout.
   @Output() toggleSidebar: EventEmitter<void> = new EventEmitter<void>();
+  // Emitimos el estado de autenticación hacia el componente Layout
+  @Output() authStatus: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   /**
      * Estado de autenticación del usuario.
@@ -33,7 +35,10 @@ export class HeaderComponent {
   constructor(private authStateService: AuthStateService, private router: Router) {
     // Suscripción al estado de autenticación del servicio.
     this.authStateService.authState$.subscribe((user) => {
-      this.isAuthenticated = !!user; // Actualiza la variable 'isAuthenticated' según la existencia de un usuario autenticado.
+      // Actualiza la variable 'isAuthenticated' según la existencia de un usuario autenticado.
+      this.isAuthenticated = !!user; 
+      // Emitimos el estado de autenticación cada vez que cambie.
+      this.authStatus.emit(this.isAuthenticated);
     });
   }
 

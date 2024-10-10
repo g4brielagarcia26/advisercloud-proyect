@@ -1,27 +1,26 @@
-<div class="layout" [class.sidebar-hidden]="!isSidebarVisible">
+<div class="layout" [class.sidebar-visible]="isSidebarVisible && isAuthenticated">
 
   <!-- Header -->
-  <header 
-    class="header bg-gray-50 shadow-md"
-    >
+  <header class="header bg-gray-50 shadow-md dark:bg-gray-800">
     <!-- Aquí escuchamos el evento desde el HeaderComponent -->
-    <app-header (toggleSidebar)="toggleSidebar()"></app-header>
+    <app-header (toggleSidebar)="toggleSidebar()" (authStatus)="onAuthStatusChange($event)"></app-header>
   </header>
 
   <!-- Barra lateral -->
-   @if(isSidebarVisible) {
-    <aside class="sidebar bg-emerald-500">
-      <app-sidebar></app-sidebar>
-    </aside>
-   }
-  
+  @if(isSidebarVisible && isAuthenticated) {
+  <aside class="sidebar bg-emerald-200 border-r-2 border-emerald-600 dark:bg-gray-900">
+    <app-sidebar></app-sidebar>
+  </aside>
+  }
+
   <!-- Contenedor principal -->
-  <section class="content">
+  <section class="content w-4/5 mx-auto my-10">
+    <app-filters></app-filters>
     <router-outlet />
   </section>
 
   <!-- Footer -->
-  <footer class="footer bg-gray-50">
+  <footer class="footer bg-gray-50 dark:bg-gray-800">
     <app-footer />
   </footer>
 </div>

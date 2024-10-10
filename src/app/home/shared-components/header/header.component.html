@@ -3,23 +3,25 @@
 
   <!-- Botón para cerrar el sidebar y párrafo Dashboard -->
   <div class="flex">
-    <button (click)="onToggleSidebar()"  class="px-2">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-6 h-6" viewBox="0 0 16 16">
-        <path fill-rule="evenodd"
-          d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
-      </svg>
-    </button>
-    <a routerLink="tool-panel" class="text-base ml-2 text-gray-500">Dashboard</a>
+    @if (isAuthenticated) {
+      <button (click)="onToggleSidebar()" class="px-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-6 h-6 dark:text-gray-100" viewBox="0 0 16 16">
+          <path fill-rule="evenodd"
+            d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
+        </svg>
+      </button>
+    }
+    <a routerLink="tool-panel" class="text-base ml-2 text-gray-500 dark:text-gray-100">Dashboard</a>
   </div>
 
   <!-- Filtro Busqueda -->
-  <div class="flex h-8 w-1/3 mx-7 rounded-full border-gray-400 border-opacity-65 border bg-gray-50 px-2">
-    <input type="text" class="flex w-full bg-transparent px-3 text-gray-700 outline-0 font-sans" placeholder="Buscar" />
+  <div class="flex h-8 w-1/3 mx-7 rounded-full border-gray-400 dark:border-gray-100 border-opacity-65 border bg-gray-50 dark:bg-gray-800 px-2">
+    <input type="text" class="flex w-full bg-transparent px-3 text-gray-700 dark:text-gray-100 outline-0 font-sans" placeholder="Buscar" />
     <!-- Linea divisoria busqueda -->
-    <div class="border-gray-400 border-opacity-70 my-1 border-l"></div>
+    <div class="border-gray-400 dark:border-gray-100 border-opacity-70 my-1 border-l"></div>
     <!-- Botón con icono de lupa -->
-    <button type="submit" class="relative rounded-full bg-transparent px-1">
-      <svg class="fill-none size-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <button type="submit" class="relative rounded-full bg-transparent px-1 dark:text-gray-100">
+      <svg class="fill-none size-5 dark:text-gray-100" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
         <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
         <g id="SVGRepo_iconCarrier">
@@ -34,7 +36,7 @@
   <!-- Icono usuario -->
   <div id="user" class="p-2">
     <button (click)="handleUserAction()">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="h-7 w-7 text-gray-400 hover:text-emerald-500"
+      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="h-7 w-7 text-gray-400 dark:text-gray-100"
         viewBox="0 0 16 16">
         <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
         <path fill-rule="evenodd"
@@ -48,17 +50,17 @@
     <div [ngClass]="{
     'transition ease-out duration-300 transform opacity-100 scale-100': isDropdownUserOpen,
     'transition ease-in duration-75 transform opacity-0 scale-95': !isDropdownUserOpen
-  }" class="absolute right-0 mt-[10px] w-1/6 bg-gray-50 border-gray-200 border shadow-md">
+  }" class="absolute right-0 mt-[10px] w-1/6 dark:text-gray-100 bg-gray-50 dark:bg-gray-800 dark:border-none border-gray-200 border shadow-md">
 
-      <a routerLink="/user" class="flex justify-start p-2 hover:bg-emerald-100 hover:rounded-sm">
+      <a routerLink="/user" class="flex justify-start p-2 hover:bg-emerald-100 dark:hover:bg-gray-700">
         <label class="ml-2 cursor-pointer">Perfil</label>
       </a>
 
-      <a class="flex justify-start p-2 hover:bg-emerald-100 hover:rounded-sm">
+      <a class="flex justify-start p-2 hover:bg-emerald-100 dark:hover:bg-gray-700">
         <label class="ml-2 cursor-pointer">Ajustes</label>
       </a>
 
-      <a (click)="userLogOut()" class="flex justify-start p-2 hover:bg-emerald-100 hover:rounded-sm">
+      <a (click)="userLogOut()" class="flex justify-start p-2 hover:bg-emerald-100 dark:hover:bg-gray-700">
         <label class="ml-2 cursor-pointer">Salir</label>
       </a>
     </div>
