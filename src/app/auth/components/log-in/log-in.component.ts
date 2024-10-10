@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, HostListener, inject } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { isRequired, hasEmailError } from '../../utils/validators/validators';
 import { AuthService } from '../../data-access/auth.service';
@@ -105,6 +105,12 @@ export default class LogInComponent {
         toast.error(error.message || 'Ocurrió un error al iniciar sesión');
       }
     }
+  }
+  //Escucha el evento de pulsar la tecla enter para enviar el formulario
+  @HostListener('document:keydown.enter', ['$event'])
+  handleEnterKey(event: KeyboardEvent) {
+    event.preventDefault();
+    this.submit();
   }
 
   /**
