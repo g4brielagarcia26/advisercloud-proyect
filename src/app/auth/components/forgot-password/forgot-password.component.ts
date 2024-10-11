@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, HostListener, inject } from '@angular/core';
 import {
   ReactiveFormsModule,
   FormControl,
@@ -9,7 +9,7 @@ import { isRequired, hasEmailError } from '../../utils/validators/validators';
 import { AuthService } from '../../data-access/auth.service';
 import { RouterLink } from '@angular/router';
 import { toast } from 'ngx-sonner';
-import { Firestore ,doc, getDoc } from '@angular/fire/firestore';
+import { Firestore ,collection,getDocs, query, where } from '@angular/fire/firestore';
 
 interface FormResetPassword {
   email: FormControl<string | null>;
@@ -24,6 +24,7 @@ interface FormResetPassword {
 export default class ForgotPasswordComponent {
   private _formBuilder = inject(FormBuilder);
   private _authService = inject(AuthService);
+  private _firestore = inject (Firestore)
 
   // Definición del formulario reactivo con el campo 'email'.
   form = this._formBuilder.group<FormResetPassword>({
@@ -53,29 +54,27 @@ export default class ForgotPasswordComponent {
       return;
     }
 
-    // Verifica si el usuario existe en la base de datos de Firestore
-    const userExists = await this._authService.checkUserExists(email);
-
-    if (!userExists) {
-      toast.error('El email no está registrado');
+    try {
+    // Referencia a la colección 'users' en Firestore
+    const userRef = collection(this._firestore, 'users');
+    //consulta donde el campo 'email' es igual al email proporcionado
+    const queryUserDoc = await getDocs(query(userRef, where('email','==',email)));
+    
+    //Verifica si se encontraron documentos.
+    if (queryUserDoc.empty) {
+      toast.error('Este correo no está registrado');
       return;
     }
-    try {
-    // Obtener el documento del usuario desde Firestore usando el email
-    // const userDocRef = doc(this._firestore, `users/${email}`);
-    // const userDoc = await getDoc(userDocRef);
+    
+    //Se obitene el primer documento del resultado de la consulta.
+    const userDoc = queryUserDoc.docs[0];
+    const userData = userDoc.data();
 
-    // if (!userDoc.exists()) {
-    //   toast.error('Este correo no está registrado');
-    //   return;
-    // }
-
-    // const userData = userDoc.data();
-
-    // if (userData['authMethod'] === 'google') {
-    //   toast.error('Este usuario está registrado con Google. No se puede restablecer la contraseña');
-    //   return;
-    // }
+    // Verifica si el método de autenticación es Google.
+    if (userData['authMethod'] === 'google') {
+      toast.error('Este usuario fue registrado con Google. No se puede restablecer la contraseña');
+      return;
+    }
       //Llamada al método para restablecer la contraseña
       await this._authService.sendPasswordResetEmail(email);
       toast.success(
@@ -87,5 +86,11 @@ export default class ForgotPasswordComponent {
       );
     }
   }
-  private _firestore = inject (Firestore)
+  //Escucha el evento de pulsar la tecla enter para enviar el formulario
+  @HostListener('document:keydown.enter', ['$event'])
+  handleEnterKey(event: KeyboardEvent) {
+    event.preventDefault();
+    this.submit();
+  }
+  
 }
