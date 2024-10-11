@@ -17,4 +17,11 @@ export class FiltersComponent {
     this.selectedButton = button;
   }
 
+  isFiltersOpen = false;
+
+  toggleFilters() {
+    this.isFiltersOpen = !this.isFiltersOpen;
+  }
 }
+
+

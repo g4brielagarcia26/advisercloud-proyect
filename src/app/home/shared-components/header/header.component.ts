@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, inject, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Output, ElementRef } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthStateService } from '../../../shared/data-access/auth-state.service';
 import { NgClass } from '@angular/common';
@@ -32,11 +32,15 @@ export class HeaderComponent {
    * @param authStateService - Servicio de estado de autenticación que permite obtener y gestionar el estado actual del usuario autenticado.
    * @param router - Servicio de enrutador de Angular que permite la navegación programática entre rutas.
    */
-  constructor(private authStateService: AuthStateService, private router: Router) {
+  constructor(
+    private authStateService: AuthStateService,
+    private router: Router,
+    private elementRef: ElementRef // Inyectamos ElementRef para acceder al DOM.
+  ) {
     // Suscripción al estado de autenticación del servicio.
     this.authStateService.authState$.subscribe((user) => {
       // Actualiza la variable 'isAuthenticated' según la existencia de un usuario autenticado.
-      this.isAuthenticated = !!user; 
+      this.isAuthenticated = !!user;
       // Emitimos el estado de autenticación cada vez que cambie.
       this.authStatus.emit(this.isAuthenticated);
     });
@@ -57,6 +61,11 @@ export class HeaderComponent {
     });
   }
 
+  // Método para emitir el evento y que el sidebar pueda cerrarse.
+  onToggleSidebar() {
+    this.toggleSidebar.emit(); // Emitimos el evento para notificar al layout
+  }
+
   // Acción al hacer clic en el botón del usuario
   handleUserAction(): void {
     if (this.isAuthenticated) {
@@ -74,8 +83,19 @@ export class HeaderComponent {
     this.isDropdownUserOpen = !this.isDropdownUserOpen;
   }
 
-  // Método para emitir el evento y que el sidebar pueda cerrarse.
-  onToggleSidebar() {
-    this.toggleSidebar.emit(); // Emitimos el evento para notificar al layout
+
+  /**
+   * @HostListener para detectar clics fuera del menú desplegable
+   * 
+   * Escucha cualquier clic en el documento y verifica si el clic ocurrió fuera del
+   * dropdown del usuario. Si es así, cierra el dropdown.
+   */
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const clickedInside = this.elementRef.nativeElement.contains(event.target);
+    if (!clickedInside && this.isDropdownUserOpen) {
+      this.isDropdownUserOpen = false; // Cierra el menú desplegable si el clic fue fuera del componente
+    }
   }
+
 } // :)
