@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, HostListener, inject } from '@angular/core';
 import { FormBuilder, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../data-access/auth.service';
 import { Router, RouterLink } from '@angular/router';
@@ -116,6 +116,12 @@ export default class SignUpComponent {
       // Manejo de errores al intentar registrar al usuario
       toast.error((error as Error).message || 'Ocurrió un error al crear el usuario.');
     }
+  }
+  //Escucha el evento de pulsar la tecla enter para enviar el formulario
+  @HostListener('document:keydown.enter', ['$event'])
+  handleEnterKey(event: KeyboardEvent) {
+    event.preventDefault();
+    this.submit();
   }
 
   // Método para manejar el inicio de sesión con Google
