@@ -4,3 +4,19 @@
     gap: 20px; /* Espacio entre las tarjetas */
     justify-content: center; /* Centra las tarjetas en la línea */
   }
+
+  .tool-card {
+    width: 175px;
+    height: 175px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+  }
