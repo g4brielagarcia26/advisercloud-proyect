@@ -1,19 +1,17 @@
-import { Component} from '@angular/core';
+import { Component, inject} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ToolModel } from '../tool-model/tool.model';
 import { Observable } from 'rxjs';
 import { ToolService } from '../tool-service/tool-service'; 
-
+import { ToolDetailComponent } from '../tool-detail/tool-detail.component';
 
 @Component({
   selector: 'app-tool-panel',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ToolDetailComponent],
   templateUrl: './tool-panel.component.html',
   styleUrl: './tool-panel.component.css'
 })
-
-
 export default class ToolPanelComponent {
 
   // Lista de herramientas obtenidas de Firebase
@@ -35,4 +33,13 @@ export default class ToolPanelComponent {
     this.selectedTool = tool;// Actualiza la variable selectedTool con la herramienta seleccionada.
   }
 
+  showModal = false;
+
+  openModal() {
+    this.showModal = true;
+  }
+
+  closeModal() {
+    this.showModal = false;
+  }
 }
