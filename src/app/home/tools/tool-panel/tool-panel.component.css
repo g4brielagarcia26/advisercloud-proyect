@@ -1,61 +1,10 @@
 .tool-container {
   display: grid; /* Usar grid para la disposición */
-  grid-template-columns: repeat(5, 1fr); /* 5 columnas de igual tamaño */
-  gap: 10px;
-  justify-items: center; /* Centra las tarjetas en la línea */
-}
-
-.tool-card {
-  width: 240px; /* Ancho fijo para las tarjetas */
-  height: 140px; /* Altura de la tarjeta */
-  border: 1px solid #ccc; /* Borde de la tarjeta */
-  border-radius: 8px; /* Esquinas redondeadas */
-  padding: 10px; /* Espaciado interno */
-  background-color: #f9f9f9; /* Color de fondo */
-  display: flex; /* Usar flex para la disposición interna */
-  flex-direction: column; /* Organizar el contenido en columna */
-  justify-content: space-between; /* Espacio entre el header y el body */
-  align-items: flex-start; /* Alinea el contenido a la izquierda */
-  text-align: left; /* Alineación del texto */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra de la tarjeta */
-  transition: transform 0.2s ease-in-out; /* Transición suave al transformar */
-}
-
-.tool-header {
-  display: flex;
-  justify-content: space-between; /* Espacio entre nombre y precio */
-  align-items: center; /* Alineación vertical */
-  height: 30px; /* Altura ajustada para el header */
-}
-
-.tool-price {
-  font-weight: normal; /* Peso normal para el precio */
-  font-size: 14px; /* Tamaño de la fuente del precio */
-  color: #2d7bf0; /* Color del precio */
-}
-
-.tool-body {
-  display: flex;
-  flex-direction: column; /* Organizar nombre y descripción verticalmente */
-  justify-content: flex-start; /* Iniciar contenido desde la parte superior */
-  flex-grow: 1; /* Permite que el cuerpo crezca y ocupe espacio */
-  padding-top: 10px; /* Espacio superior adicional */
-  padding-top: 10px; /* Espacio superior adicional */
-  width: 100%; /* Contenedor ocupa todo el ancho */
-}
-
-.tool-name {
-  font-size: 16px; /* Tamaño de la fuente del nombre */
-  font-weight: bold; /* Negrita para el nombre */
-  color: #000000; /* Color del nombre */
-  box-sizing: border-box; /* Incluye padding y border en el ancho */
-}
-
-.tool-description {
-  font-size: 14px; /* Tamaño de la fuente de la descripción */
-  font-weight: normal; /* Peso normal para la descripción */
-  color: #363636; /* Color de la descripción */
-  overflow: hidden; /* Oculta texto que excede el tamaño */
-  text-overflow: ellipsis; /* Puntos suspensivos si el texto es muy largo */
-  margin-top: 5px; /* Espacio entre el nombre y la descripción */
+  grid-template-columns: 
+  repeat(
+        auto-fill, 
+        minmax(260px, 1fr));
+  gap: 24px;
+  grid-auto-rows: 160px;
+  justify-items: center; /* Centra las tarjetas en la línea */ 
 }
