@@ -1,7 +1,12 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import {
+  ActivatedRouteSnapshot,
+  CanActivateFn,
+  Router,
+  RouterStateSnapshot,
+} from '@angular/router';
 import { AuthStateService } from '../../shared/data-access/auth-state.service';
-import { map } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 /**
  * Guard que verifica si el usuario está autenticado.
@@ -14,14 +19,21 @@ export const privateGuard = (): CanActivateFn => {
     const router = inject(Router); // Inyecta el servicio Router para redirigir.
     const authState = inject(AuthStateService); // Inyecta el servicio de estado de autenticación.
 
+    // Fuerza la actualización del estado del usuario
+    authState.reloadUser();
+
     // Escucha el estado de autenticación y mapea el resultado.
     return authState.authState$.pipe(
       map((state) => {
-        console.log(state); // Muestra el estado de autenticación en la consola.
+        console.log('Estado en privateGuard', state); // Muestra el estado de autenticación en la consola.
         // Si el estado es falso (no autenticado), redirige a la página de inicio.
         if (!state) {
-          router.navigateByUrl('/home');
+          router.navigateByUrl('/home/tool-panel');
           return false; // Bloquea el acceso a la ruta privada.
+        }
+        if (!state.emailVerified) {
+          router.navigateByUrl('/home/tool-panel');
+          return false;
         }
         return true; // Permite el acceso a la ruta.
       })
@@ -35,21 +47,51 @@ export const privateGuard = (): CanActivateFn => {
  *
  * @returns Función que se puede utilizar como guard para rutas.
  */
+
 export const publicGuard = (): CanActivateFn => {
-  return () => {
-    const router = inject(Router); // Inyecta el servicio Router para redirigir.
-    const authState = inject(AuthStateService); // Inyecta el servicio de estado de autenticación.
+  return (
+    route: ActivatedRouteSnapshot, // Información sobre la ruta activada.
+    state: RouterStateSnapshot // Estado de la navegación en este momento.
+  ): Observable<boolean> => {
+    // Devuelve un observable que emite un booleano
+    const router = inject(Router);
+    const authState = inject(AuthStateService);
+
+    // Llama al método para forzar la actualización del estado del usuario
+    authState.reloadUser();
 
     // Escucha el estado de autenticación y mapea el resultado.
     return authState.authState$.pipe(
-      map((state) => {
-      // Si el estado es verdadero (autenticado)
-      // Si el usuario está autenticado y ha verificado su correo
-        if (state) {
-          router.navigateByUrl('/home');
-          return false; // Bloquea el acceso a la ruta pública.
+      map((user) => {
+        console.log('Estado en publicGuard', user);
+        // Guarda la URL de destino a la que se quiere acceder.
+        const targetUrl = state.url;
+
+        if (!user) {
+          console.log('No hay usuario, permitiendo acceso');
+          return true;
+          
         }
-        return true; // Permite el acceso a la ruta.
+
+        // Si hay un usuario autenticado e intenta acceder a '/auth/log-in' sin verificar el correo.
+        if (user && targetUrl === '/auth/log-in' && !user.emailVerified) {
+          console.log('Usuario autenticado pero no verificado, permitiendo acceso a /auth/log-in');
+          return true; // Permite el acceso a la ruta de inicio de sesión.
+        }
+        // Si hay un usuario autenticado y su correo está verificado, redirige a la página principal.
+        if (user.emailVerified) {
+          if (
+            targetUrl === '/auth/log-in' ||
+            targetUrl === '/auth/sign-up' ||
+            targetUrl === '/auth/send-email' ||
+            targetUrl === '/auth/forgot-password'
+          ) {
+            console.log('Redirigiendo a /home/tool-panel');
+            router.navigateByUrl('/home/tool-panel');
+            return false;
+          }
+        }
+        return true;
       })
     );
   };

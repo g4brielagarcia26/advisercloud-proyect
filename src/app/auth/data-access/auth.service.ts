@@ -9,6 +9,7 @@ import {
   sendEmailVerification,
   sendPasswordResetEmail,
   user,
+  authState,
 } from '@angular/fire/auth';
 import {
   collection,
@@ -19,6 +20,8 @@ import {
   setDoc,
   where,
 } from '@angular/fire/firestore';
+import authRoutes from '../components/auth.routes';
+import { AuthStateService } from '../../shared/data-access/auth-state.service';
 
 // Definimos nuestra interfaz "User", que será utilizada para estructurar los datos del usuario.
 export interface User {
@@ -34,6 +37,7 @@ export interface User {
 export class AuthService {
   // Inyectamos los servicios de autenticación y Firestore de Firebase mediante la función "inject".
   private _auth = inject(Auth);
+  private _authState = inject(AuthStateService);
   private _firestore = inject(Firestore);
 
   /**
@@ -66,6 +70,9 @@ export class AuthService {
       // Guardamos el objeto "userData" en Firestore bajo la colección "users", utilizando el UID como ID del documento.
       await setDoc(doc(this._firestore, `users/${uid}`), userData);
 
+      // Llama al método para actualizar el estado de autenticación.
+      await this.updateAuthState();
+
       // Devolver las credenciales del usuario creado.
       return userCredential;
     } catch (error) {
@@ -96,6 +103,9 @@ export class AuthService {
         // Si el correo no está verificado, lanza un error
         throw new Error('Correo no verificado.');
       }
+
+      // Llama al método para actualizar el estado de autenticación.
+      await this.updateAuthState();
 
       // Si el correo está verificado, retornar las credenciales
       return userCredential;
@@ -188,5 +198,16 @@ export class AuthService {
     } catch (error) {
       throw new Error('Error en submit');
     }
+  }
+
+  /**
+   * Método para suscribirse al estado de autenticación y actualizarlo
+   */
+  private async updateAuthState() {
+      authState(this._auth).subscribe(async (authUser: User | null) => {
+        if (authUser) {
+          await this._authState.reloadUser();
+        }
+      });
   }
 } // :)

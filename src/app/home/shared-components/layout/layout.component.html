@@ -1,4 +1,4 @@
-<div class="layout" [class.sidebar-visible]="isSidebarVisible && isAuthenticated">
+<div class="layout" [class.sidebar-visible]="isSidebarVisible && isAuthenticated && user?.emailVerified">
 
   <!-- Header -->
   <header class="header bg-gray-50 shadow-md dark:bg-gray-800">
@@ -7,7 +7,7 @@
   </header>
 
   <!-- Barra lateral -->
-  @if(isSidebarVisible && isAuthenticated) {
+  @if(isSidebarVisible && isAuthenticated && user?.emailVerified) {
   <aside class="sidebar bg-emerald-200 border-r-2 border-emerald-600 dark:bg-gray-900">
     <app-sidebar></app-sidebar>
   </aside>
