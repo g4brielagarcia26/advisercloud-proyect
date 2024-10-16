@@ -49,8 +49,27 @@ export class HeaderComponent {
     this.authStateService.authState$.subscribe((user) => {
       // Actualiza la variable 'isAuthenticated' según la existencia de un usuario autenticado.
       this.isAuthenticated = !!user;
+      this.user = user;
       // Emitimos el estado de autenticación cada vez que cambie.
       this.authStatus.emit(this.isAuthenticated);
+    });
+  }
+
+  ngOnInit() {
+    //Eventos de navegación del router
+    this.router.events.subscribe((event) => {
+      //Inicio de navegación, muestra la url a la que se está navegando
+      if (event instanceof NavigationStart) {
+        console.log('Navegación iniciada hacia:', event.url);
+      }
+      //Muestra la url final
+      if (event instanceof NavigationEnd) {
+        console.log('Navegación finalizada hacia:', event.url);
+      }
+      //Muestra la url donde se produce el error
+      if (event instanceof NavigationError) {
+        console.log('Error en la navegación hacia:', event.url);
+      }
     });
   }
 
@@ -75,35 +94,6 @@ export class HeaderComponent {
   // Método para emitir el evento y que el sidebar pueda cerrarse.
   onToggleSidebar() {
     this.toggleSidebar.emit(); // Emitimos el evento para notificar al layout
-  }
-
-
-  ngOnInit() {
-    // Suscripción al estado de autenticación del servicio.
-    this.authStateService.authState$.subscribe((user) => {
-      // Actualiza el estado de autenticación basado en si hay un usuario autenticado
-      this.isAuthenticated = !!user;// Convertir 'user' a booleano: true si hay un usuario, false si no.
-      this.user = user;// Almacena el objeto 'user' en la propiedad de la clase.
-      console.log('HeaderComponent - isAuthenticated:', this.isAuthenticated);
-      console.log('HeaderComponent - user:', this.user);
-      console.log('HeaderComponent - emailVerified:', this.user?.emailVerified);
-    });
-
-    //Eventos de navegación del router
-    this.router.events.subscribe((event) => {
-      //Inicio de navegación, muestra la url a la que se está navegando
-      if (event instanceof NavigationStart) {
-        console.log('Navegación iniciada hacia:', event.url);
-      }
-      //Muestra la url final
-      if (event instanceof NavigationEnd) {
-        console.log('Navegación finalizada hacia:', event.url);
-      }
-      //Muestra la url donde se produce el error
-      if (event instanceof NavigationError) {
-        console.log('Error en la navegación hacia:', event.url);
-      }
-    });
   }
 
   // Acción al hacer clic en el botón del usuario

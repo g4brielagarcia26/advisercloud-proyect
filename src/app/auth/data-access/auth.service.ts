@@ -8,8 +8,6 @@ import {
   UserCredential,
   sendEmailVerification,
   sendPasswordResetEmail,
-  user,
-  authState,
 } from '@angular/fire/auth';
 import {
   collection,
@@ -20,7 +18,6 @@ import {
   setDoc,
   where,
 } from '@angular/fire/firestore';
-import authRoutes from '../components/auth.routes';
 import { AuthStateService } from '../../shared/data-access/auth-state.service';
 
 // Definimos nuestra interfaz "User", que será utilizada para estructurar los datos del usuario.
@@ -71,7 +68,8 @@ export class AuthService {
       await setDoc(doc(this._firestore, `users/${uid}`), userData);
 
       // Llama al método para actualizar el estado de autenticación.
-      await this.updateAuthState();
+      this._authState.setUserState(userCredential.user);
+      console.log('Estado de usuario actualizado en AuthStateService:', userCredential.user);
 
       // Devolver las credenciales del usuario creado.
       return userCredential;
@@ -88,6 +86,8 @@ export class AuthService {
    */
   async signIn(user: Pick<User, 'email' | 'password'>) {
     try {
+      console.log('Itentando iniciar sesion con: ',user.email);
+      
       // Iniciar sesión con email y contraseña
       const userCredential = await signInWithEmailAndPassword(
         this._auth,
@@ -97,15 +97,19 @@ export class AuthService {
 
       // Obtener el usuario autenticado
       const currentUser = userCredential.user;
+      console.log('Usuario autenticado:', currentUser);
+      
 
       // Verificar si el correo ha sido verificado
       if (!currentUser.emailVerified) {
+        console.log('Correo no verificado para el usuario:', currentUser.email);
         // Si el correo no está verificado, lanza un error
         throw new Error('Correo no verificado.');
       }
 
       // Llama al método para actualizar el estado de autenticación.
-      await this.updateAuthState();
+      this._authState.setUserState(currentUser);
+      console.log('Estado de usuario actualizado en AuthStateService:', currentUser);
 
       // Si el correo está verificado, retornar las credenciales
       return userCredential;
@@ -198,16 +202,5 @@ export class AuthService {
     } catch (error) {
       throw new Error('Error en submit');
     }
-  }
-
-  /**
-   * Método para suscribirse al estado de autenticación y actualizarlo
-   */
-  private async updateAuthState() {
-      authState(this._auth).subscribe(async (authUser: User | null) => {
-        if (authUser) {
-          await this._authState.reloadUser();
-        }
-      });
   }
 } // :)

@@ -19,10 +19,18 @@ export class AuthStateService {
   constructor(private _auth: Auth) {
     // Suscripción al estado de autenticación del usuario.
     authState(this._auth).subscribe((user: User | null) => [
-      this.userSubject.next(user), // Actualiza el BehaviorSubject con el nuevo estado del usuario
-      (this.isAuthenticated = !!user), // Establece isAuthenticated en true si hay un usuario, de lo contrario false.
-      (this.emailVerified = user?.emailVerified || false),// Establece emailVerified en true si el correo está verificado, de lo contrario false.
+      console.log('Usuario autenticado en AuthStateService:', user),
+      this.setUserState(user) //Llama a setUserState para actualizar el estado del usuario
     ]);
+  }
+
+  public setUserState (user: User | null) {
+    console.log('Actualizando estado del usuario:', user);
+    this.userSubject.next(user); // Actualiza el BehaviorSubject con el nuevo estado del usuario.
+    (this.isAuthenticated = !!user); // Establece isAuthenticated en true si hay un usuario, de lo contrario false.
+    (this.emailVerified = user?.emailVerified || false);// Establece emailVerified en true si el correo está verificado, de lo contrario false.
+    console.log('Estado de autenticación:', this.isAuthenticated);
+    console.log('Correo verificado:', this.emailVerified);
   }
 
   /**
@@ -33,10 +41,17 @@ export class AuthStateService {
     return this.userSubject.asObservable(); // Devuelve el observable asociado al BehaviorSubject para permitir la suscripción desde otros componentes o servicios.
   }
 
-  // Método para forzar la actualización del estado usuario
-  reloadUser(): void {
-    const user = this._auth.currentUser; //Obtiene el usuario actual 
-    this.userSubject.next(user);//se actualiza con el nuevo estado del usuario en BehaviorSubject
+  /**
+   * Método para forzar la actualización del estado usuario
+   * crea una promesa que se resuelve cuando el usuario ha sido actualizado
+  */
+  public updateUserState(): Promise<void> {
+    return new Promise((resolve) => { // Crea una nueva promesa
+      authState(this._auth).subscribe((user: User | null) => { // Suscríbete al estado de autenticación de Firebase
+        this.setUserState(user); // Actualiza el estado del usuario usando setUserState
+        resolve(); // Resuelve la promesa cuando el estado del usuario se ha actualizado
+      });
+    });
   }
 
   /**
@@ -44,6 +59,14 @@ export class AuthStateService {
    * @returns Una promesa que se resuelve cuando el usuario ha cerrado sesión.
    */
   logOut() {
-    return signOut(this._auth); // Llama a la función de Firebase para cerrar sesión.
+     // Llama a la función de Firebase para cerrar sesión.
+    return signOut(this._auth)
+    .then(() =>{
+      this.setUserState(null);// Actualiza el estado del usuario a null tras cerrar sesión
+      console.log('Usuario ha cerrado sesión.');
+    })
+    .catch((error)=> {
+      console.log('Error al cerrar sesión: ',error);
+    });
   }
 } // :)
