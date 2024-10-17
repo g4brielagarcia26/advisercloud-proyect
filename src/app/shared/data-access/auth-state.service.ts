@@ -1,23 +1,57 @@
-import { inject, Injectable } from "@angular/core";
-import { Auth, authState, signOut } from "@angular/fire/auth";
-import { Observable } from "rxjs";
+import { Injectable } from '@angular/core';
+import { Auth, authState, signOut, User } from '@angular/fire/auth';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 /**
  * Servicio que maneja el estado de autenticación del usuario.
  * Proporciona un observable del estado de autenticación y métodos para gestionar la sesión del usuario.
  */
 @Injectable({
-  providedIn: 'root', 
+  providedIn: 'root',
 })
 export class AuthStateService {
-  private _auth = inject(Auth); // Inyecta el servicio de autenticación de Firebase.
+  // Inicializa un BehaviorSubject para almacenar el estado del usuario,     inicialmente null.
+  private userSubject = new BehaviorSubject<User | null>(null);
+  public isAuthenticated = false;// Variable pública que indica si hay un usuario autenticado
+  public emailVerified = false;// Variable pública que indica si el correo del usuario está verificado
+
+  // Constructor del servicio de autenticación, donde se inyecta el servicio de autenticación de Firebase
+  constructor(private _auth: Auth) {
+    // Suscripción al estado de autenticación del usuario.
+    authState(this._auth).subscribe((user: User | null) => [
+      console.log('Usuario autenticado en AuthStateService:', user),
+      this.setUserState(user) //Llama a setUserState para actualizar el estado del usuario
+    ]);
+  }
+
+  public setUserState (user: User | null) {
+    console.log('Actualizando estado del usuario:', user);
+    this.userSubject.next(user); // Actualiza el BehaviorSubject con el nuevo estado del usuario.
+    (this.isAuthenticated = !!user); // Establece isAuthenticated en true si hay un usuario, de lo contrario false.
+    (this.emailVerified = user?.emailVerified || false);// Establece emailVerified en true si el correo está verificado, de lo contrario false.
+    console.log('Estado de autenticación:', this.isAuthenticated);
+    console.log('Correo verificado:', this.emailVerified);
+  }
 
   /**
    * Obtiene el estado de autenticación como un observable.
    * @returns Un observable que emite el estado de autenticación del usuario.
    */
-  get authState$(): Observable<any> {
-    return authState(this._auth); // Devuelve el observable del estado de autenticación.
+  get authState$(): Observable<User | null> {
+    return this.userSubject.asObservable(); // Devuelve el observable asociado al BehaviorSubject para permitir la suscripción desde otros componentes o servicios.
+  }
+
+  /**
+   * Método para forzar la actualización del estado usuario
+   * crea una promesa que se resuelve cuando el usuario ha sido actualizado
+  */
+  public updateUserState(): Promise<void> {
+    return new Promise((resolve) => { // Crea una nueva promesa
+      authState(this._auth).subscribe((user: User | null) => { // Suscríbete al estado de autenticación de Firebase
+        this.setUserState(user); // Actualiza el estado del usuario usando setUserState
+        resolve(); // Resuelve la promesa cuando el estado del usuario se ha actualizado
+      });
+    });
   }
 
   /**
@@ -25,7 +59,14 @@ export class AuthStateService {
    * @returns Una promesa que se resuelve cuando el usuario ha cerrado sesión.
    */
   logOut() {
-    return signOut(this._auth); // Llama a la función de Firebase para cerrar sesión.
+     // Llama a la función de Firebase para cerrar sesión.
+    return signOut(this._auth)
+    .then(() =>{
+      this.setUserState(null);// Actualiza el estado del usuario a null tras cerrar sesión
+      console.log('Usuario ha cerrado sesión.');
+    })
+    .catch((error)=> {
+      console.log('Error al cerrar sesión: ',error);
+    });
   }
-
 } // :)
