@@ -1,59 +1,88 @@
+@if (!isRoute('/home/user')) {
 <div class="lg:w-full flex items-center mb-10 flex-wrap">
-  <div class="w-full lg:w-5/6 flex items-center justify-center lg:justify-start gap-2 md:gap-4 my-4 lg:my-0">
-    <button *ngFor="let button of buttons" (click)="selectButton(button)"
-    class="md:w-28 w-20 text-xs md:text-base border rounded-full font-medium p-1" [ngClass]="{
-        'border-emerald-600 text-emerald-600 bg-emerald-100 dark:border-2 dark:text-emerald-400 dark:bg-gray-800': selectedButton === button,
-        'border-gray-300 text-gray-500 hover:border-emerald-600 hover:text-emerald-600 dark:bg-gray-900 dark:border-gray-200 dark:text-gray-200 dark:hover:border-emerald-400 dark:hover:text-emerald-400 dark:hover:bg-gray-800': selectedButton !== button
-      }">
-    <label>{{ button }}</label>
-  </button>
+  <div
+    class="w-full lg:w-5/6 flex items-center justify-center lg:justify-start gap-2 md:gap-4 my-4 lg:my-0"
+  >
+    <button
+      *ngFor="let button of buttons"
+      (click)="selectButton(button)"
+      class="md:w-28 w-20 text-xs md:text-base border rounded-full font-medium p-1"
+      [ngClass]="{
+        'border-emerald-600 text-emerald-600 bg-emerald-100 dark:border-2 dark:text-emerald-400 dark:bg-gray-800':
+          selectedButton === button,
+        'border-gray-300 text-gray-500 hover:border-emerald-600 hover:text-emerald-600 dark:bg-gray-900 dark:border-gray-200 dark:text-gray-200 dark:hover:border-emerald-400 dark:hover:text-emerald-400 dark:hover:bg-gray-800':
+          selectedButton !== button
+      }"
+    >
+      <label>{{ button }}</label>
+    </button>
   </div>
-  
 
- <!-- Botón de Filtros -->
+  <!-- Botón de Filtros -->
   <div class="w-full lg:w-1/6 flex justify-end">
     <div class="relative">
-      <button (click)="toggleFilters()" 
-        class="border border-gray-400 text-gray-500 text-xs md:text-base font-medium rounded-md flex items-center justify-center space-x-2 md:w-28 w-24 h-8 md:h-10 dark:bg-gray-900 dark:text-gray-100">
+      <button
+        (click)="toggleFilters()"
+        class="border border-gray-400 text-gray-500 text-xs md:text-base font-medium rounded-md flex items-center justify-center space-x-2 md:w-28 w-24 h-8 md:h-10 dark:bg-gray-900 dark:text-gray-100"
+      >
         <!-- Icono SVG -->
-        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-5 h-5"
-          viewBox="0 0 16 16">
-          <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          class="w-5 h-5"
+          viewBox="0 0 16 16"
+        >
+          <path
+            d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"
+          />
         </svg>
         <span>Filtrar</span>
       </button>
 
-    
       <!-- Dropdown de filtros -->
-      <div *ngIf="isFiltersOpen" class="absolute z-10 right-0 mt-1 w-48 bg-white border border-gray-200 shadow-lg rounded-md font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:border-none">
+      <div
+        *ngIf="isFiltersOpen"
+        class="absolute z-10 right-0 mt-1 w-48 bg-white border border-gray-200 shadow-lg rounded-md font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:border-none"
+      >
         <form>
           <!-- Filtro 1 -->
-          <label class="flex items-center py-2 px-4 space-x-2 border-b border-gray-200 hover:bg-emerald-100 dark:hover:bg-gray-700">
+          <label
+            class="flex items-center py-2 px-4 space-x-2 border-b border-gray-200 hover:bg-emerald-100 dark:hover:bg-gray-700"
+          >
             <input type="checkbox" class="dark:checked:bg-gray-700" />
             <span>Productividad</span>
           </label>
           <!-- Filtro 2 -->
-          <label class="flex items-center py-2 px-4 space-x-2 border-b border-gray-200 hover:bg-emerald-100 dark:hover:bg-gray-700">
+          <label
+            class="flex items-center py-2 px-4 space-x-2 border-b border-gray-200 hover:bg-emerald-100 dark:hover:bg-gray-700"
+          >
             <input type="checkbox" class="" />
             <span>Creatividad</span>
           </label>
           <!-- Filtro 3 -->
-          <label class="flex items-center py-2 px-4 space-x-2 border-b border-gray-200 hover:bg-emerald-100 dark:hover:bg-gray-700">
+          <label
+            class="flex items-center py-2 px-4 space-x-2 border-b border-gray-200 hover:bg-emerald-100 dark:hover:bg-gray-700"
+          >
             <input type="checkbox" class="" />
             <span>Más vendidas</span>
           </label>
           <!-- Filtro 4 -->
-          <label class="flex items-center py-2 px-4 space-x-2 border-b border-gray-200 hover:bg-emerald-100 dark:hover:bg-gray-700">
+          <label
+            class="flex items-center py-2 px-4 space-x-2 border-b border-gray-200 hover:bg-emerald-100 dark:hover:bg-gray-700"
+          >
             <input type="checkbox" class="" />
             <span>Mayor precio</span>
           </label>
           <!-- Filtro 4 -->
-          <label class="flex items-center py-2 px-4 space-x-2 hover:bg-emerald-100 dark:hover:bg-gray-700">
+          <label
+            class="flex items-center py-2 px-4 space-x-2 hover:bg-emerald-100 dark:hover:bg-gray-700"
+          >
             <input type="checkbox" class="" />
             <span>Menor precio</span>
           </label>
         </form>
       </div>
+    </div>
   </div>
 </div>
-
+}

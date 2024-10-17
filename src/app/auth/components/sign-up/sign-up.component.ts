@@ -69,10 +69,6 @@ export default class SignUpComponent {
     return hasPasswordError(this.form, this.attemptedSubmit);
   }
 
-  // submit() {
-  //   this._router.navigateByUrl('/auth/send-email');
-  // }
-
   // Método para manejar el envío del formulario
   async submit() {
 
@@ -130,7 +126,7 @@ export default class SignUpComponent {
       // Intenta iniciar sesión con Google
       await this._authService.singInWithGoogle();
       toast.success('¡Bienvenido de nuevo!'); // Mensaje de éxito
-      this._router.navigateByUrl('/home'); // Redirige al usuario a la página de tareas
+      this._router.navigateByUrl('/home/tool-panel'); // Redirige al usuario a la página de tareas
     } catch (error) {
       // Manejo de errores al intentar iniciar sesión
       toast.error('Ocurrió un error.');

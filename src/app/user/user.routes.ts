@@ -4,7 +4,7 @@ import { Routes } from "@angular/router";
 // Este path solo puede contener rutas que sean privadas.
 export default [
   {
-    path:'',
+    path:'profile',
     loadComponent: () => import('./user/user.component')
   }
 ] as Routes 

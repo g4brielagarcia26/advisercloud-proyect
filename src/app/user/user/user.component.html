@@ -1,7 +1,14 @@
-<section>
-  <div class="w-1/2 mx-auto py-10">
-    <h1 class="text-4xl">
-      ¡Bienvenido! <strong class="text-green-600">user</strong>
-    </h1>
+<section class="flex flex-col justify-center items-center h-screen">
+  <div
+    *ngIf="(user$ | async) as user"
+    class="w-full rounded-lg sm:border sm:border-gray-200 sm:shadow-xl sm:dark:border-gray-700 sm:max-w-md sm:dark:bg-gray-800 px-6 max-h-[800px]"
+  >
+    <div class="w-1/2 mx-auto py-10">
+      <h1 class="text-4xl dark:text-white">
+        ¡Bienvenido! <strong class="text-green-600">{{user?.displayName}}</strong>
+      </h1>
+    </div>
+    
+
   </div>
 </section>

@@ -3,8 +3,8 @@ import { publicGuard, privateGuard } from './core/guards/auth.guards';
 
 export const routes: Routes = [
   {
-    path: '', // Ruta vacía redirige a Home
-    redirectTo: 'home/tool-panel',
+    path: '', // Ruta vacía redirige a home
+    redirectTo: 'home',
     pathMatch: 'full',
   },
   {
@@ -20,16 +20,9 @@ export const routes: Routes = [
     loadChildren: () => import('./auth/components/auth.routes'), 
   },
   {
-    // Guardia privado.
-    canActivate: [privateGuard()], 
-    path: 'user',
-    // Carga las rutas hijas desde userpage.routes de forma asíncrona.
-    loadChildren: () => import('./user/user.routes'), 
-  },
-  {
     //  Ruta "comodin" que se utiliza para capturar cualquier ruta que no exista.
     path: '**', 
     // Redirige a la ruta vacía, que a su vez redirige a localhost:4200/home.
-    redirectTo: 'home/tool-panel',
+    redirectTo: 'home',
   }
 ];
