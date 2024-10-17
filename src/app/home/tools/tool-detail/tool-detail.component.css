@@ -1,0 +1,129 @@
+/* Estilos para el modal y su contenido */
+
+/* Estilo de la superposición del modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+  }
+  
+  /* Contenedor del modal */
+  .modal-container {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 600px;
+    padding: 1.5rem;
+    position: relative;
+  }
+  
+    /* Barra de scroll */
+  .modal-scroll {
+    max-height: 80vh; 
+    overflow-y: auto; 
+  }
+
+  /* Botón de cerrar */
+  .close-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    cursor: pointer;
+  }
+  
+  /* Cabecera del modal */
+  .header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    background-color: #f3f4f6; /* Fondo levemente más oscuro */
+    padding: 1rem;
+    border-radius: 0.25rem;
+  }
+  
+  .modal-title {
+    font-size: 1.875rem; /* text-3xl */
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+  
+  .modal-description {
+    color: #4B5563; /* text-gray-600 */
+    margin-bottom: 0.5rem;
+  }
+  
+  .modal-price {
+    font-weight: 600;
+    color: #10B981; /* text-emerald-500 */
+  }
+  
+  /* Cuerpo del modal */
+  .content {
+    margin-top: 1rem;
+  }
+  
+  /* Agregar espacio entre los elementos del cuerpo */
+  .content > * {
+    margin-bottom: 1rem; /* Añadir un margen entre cada elemento del cuerpo */
+  }
+  
+  /* Texto del cuerpo */
+  .modal-body-text {
+    color: #374151; /* text-gray-700 */
+  }
+  
+  /* Lista de elementos */
+  .modal-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    color: #4B5563; /* text-gray-600 */
+  }
+  
+  /* Sección de video */
+  .video-section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .section-title {
+    font-size: 1.25rem; /* text-xl */
+    font-weight: bold;
+    color: #1F2937; /* text-gray-800 */
+    margin-bottom: 0.5rem;
+  }
+  
+  .video-placeholder {
+    width: 100%;
+    height: 10rem;
+    background-color: #E5E7EB; /* bg-gray-300 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9CA3AF; /* text-gray-500 */
+  }
+  
+  /* Sección de capturas */
+  .captures-section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .captures-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+  
+  .capture-placeholder {
+    width: 100%;
+    height: 8rem;
+    background-color: #E5E7EB; /* bg-gray-200 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9CA3AF; /* text-gray-500 */
+  }
+  

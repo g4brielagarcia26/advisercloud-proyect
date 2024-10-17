@@ -16,10 +16,15 @@ export default class ToolPanelComponent {
 
   // Lista de herramientas obtenidas de Firebase
   tools: Observable<ToolModel[]>;
-  
+
   // Variable para almacenar la herramienta selecciona
   selectedTool: ToolModel | null = null; // Inicialmente, no hay ninguna herramienta seleccionada, por lo que se establece en null.
 
+  
+  // Control para mostrar u ocultar el modal
+  showModal = false;
+
+  
   // Inyecta el servicio ToolService en el constructor
   constructor(private toolService: ToolService) {
     
@@ -31,15 +36,15 @@ export default class ToolPanelComponent {
   // Recibe como parámetro un objeto de tipo ToolModel, que es la herramienta seleccionada.
   onToolSelected(tool: ToolModel) {
     this.selectedTool = tool;// Actualiza la variable selectedTool con la herramienta seleccionada.
+    this.openModal();  // Abrir modal
   }
 
-  showModal = false;
-
   openModal() {
-    this.showModal = true;
+    this.showModal = true;  // Mostrar modal
   }
 
   closeModal() {
-    this.showModal = false;
+    this.showModal = false;  // Cerrar modal
+    this.selectedTool = null;  // Limpiar herramienta seleccionada al cerrar modal
   }
 }
