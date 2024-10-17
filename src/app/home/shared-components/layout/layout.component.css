@@ -7,13 +7,11 @@
     "header header header header"
     "content content content content"
     "footer footer footer footer";
-  grid-template-rows: 60px auto 40px;
   grid-template-columns: 1fr 1fr 1fr 1fr; /* El contenido ocupará todo el ancho */
 }
 
 .header {
   grid-area: header;
-  width: 100%;
 }
 
 .content {
@@ -44,7 +42,7 @@
   grid-template-areas:
     "aside header header header"
     "aside content content content"
-    "footer footer footer footer";
+    "aside footer footer footer";
   grid-template-columns: 250px 1fr 1fr 1fr;
 }
 
