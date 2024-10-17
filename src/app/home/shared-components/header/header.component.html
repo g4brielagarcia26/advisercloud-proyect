@@ -3,7 +3,7 @@
 
   <!-- Botón para cerrar el sidebar y párrafo Dashboard -->
   <div class="flex">
-    @if (isAuthenticated) {
+    @if (isAuthenticated && user?.emailVerified) {
       <button (click)="onToggleSidebar()" class="px-2">
         <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-6 h-6 dark:text-gray-100" viewBox="0 0 16 16">
           <path fill-rule="evenodd"
@@ -46,13 +46,13 @@
 
     <!-- Mostrar el dropdown si está autenticado -->
     <!-- [ngClass] se usa para agregar o quitar clases CSS condicionalmente basándose en una expresión booleana. -->
-    @if(isAuthenticated) {
+    @if(isAuthenticated && user?.emailVerified) {
     <div #dropdownMenu [ngClass]="{
     'transition ease-out duration-300 transform opacity-100 scale-100': isDropdownUserOpen,
     'transition ease-in duration-75 transform opacity-0 scale-95': !isDropdownUserOpen
   }" class="absolute right-0 mt-[12px] w-32 rounded-md dark:text-gray-100 bg-gray-50 dark:bg-gray-800 dark:border-none border-gray-200 border shadow-md z-10">
 
-      <a routerLink="/user" class="flex justify-start p-2 hover:bg-emerald-100 dark:hover:bg-gray-700">
+      <a routerLink="/home/user/profile" class="flex justify-start p-2 hover:bg-emerald-100 dark:hover:bg-gray-700">
         <label class="ml-2 cursor-pointer">Perfil</label>
       </a>
 

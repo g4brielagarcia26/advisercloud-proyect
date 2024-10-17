@@ -8,7 +8,6 @@ import {
   UserCredential,
   sendEmailVerification,
   sendPasswordResetEmail,
-  user,
 } from '@angular/fire/auth';
 import {
   collection,
@@ -19,6 +18,7 @@ import {
   setDoc,
   where,
 } from '@angular/fire/firestore';
+import { AuthStateService } from '../../shared/data-access/auth-state.service';
 
 // Definimos nuestra interfaz "User", que será utilizada para estructurar los datos del usuario.
 export interface User {
@@ -34,6 +34,7 @@ export interface User {
 export class AuthService {
   // Inyectamos los servicios de autenticación y Firestore de Firebase mediante la función "inject".
   private _auth = inject(Auth);
+  private _authState = inject(AuthStateService);
   private _firestore = inject(Firestore);
 
   /**
@@ -57,14 +58,19 @@ export class AuthService {
       const userData = {
         uid, // UID del usuario proporcionado por Firebase Authentication
         email: user.email, // Correo electrónico del usuario
-        firstName: user.firstName, // Primer nombre del usuario
-        lastName: user.lastName, // Apellido del usuario
+        displayName: `${user.firstName} ${user.lastName}`,
+        // firstName: user.firstName, // Primer nombre del usuario
+        // lastName: user.lastName, // Apellido del usuario
         authMethod: 'email', //Método con el que se ha autenticado el usuario
         createdAt: new Date(), // Fecha de creación del registro del usuario
       };
 
       // Guardamos el objeto "userData" en Firestore bajo la colección "users", utilizando el UID como ID del documento.
       await setDoc(doc(this._firestore, `users/${uid}`), userData);
+
+      // Llama al método para actualizar el estado de autenticación.
+      this._authState.setUserState(userCredential.user);
+      console.log('Estado de usuario actualizado en AuthStateService:', userCredential.user);
 
       // Devolver las credenciales del usuario creado.
       return userCredential;
@@ -81,6 +87,8 @@ export class AuthService {
    */
   async signIn(user: Pick<User, 'email' | 'password'>) {
     try {
+      console.log('Itentando iniciar sesion con: ',user.email);
+      
       // Iniciar sesión con email y contraseña
       const userCredential = await signInWithEmailAndPassword(
         this._auth,
@@ -90,12 +98,19 @@ export class AuthService {
 
       // Obtener el usuario autenticado
       const currentUser = userCredential.user;
+      console.log('Usuario autenticado:', currentUser);
+      
 
       // Verificar si el correo ha sido verificado
       if (!currentUser.emailVerified) {
+        console.log('Correo no verificado para el usuario:', currentUser.email);
         // Si el correo no está verificado, lanza un error
         throw new Error('Correo no verificado.');
       }
+
+      // Llama al método para actualizar el estado de autenticación.
+      this._authState.setUserState(currentUser);
+      console.log('Estado de usuario actualizado en AuthStateService:', currentUser);
 
       // Si el correo está verificado, retornar las credenciales
       return userCredential;
@@ -189,4 +204,5 @@ export class AuthService {
       throw new Error('Error en submit');
     }
   }
+
 } // :)

@@ -91,7 +91,7 @@ export default class LogInComponent {
 
       // Si el inicio de sesión es exitoso, navegar a la página principal
       toast.success('¡Bienvenido nuevamente!');
-      this._router.navigateByUrl('/home');
+      this._router.navigateByUrl('/home/tool-panel');
 
     } catch (error: any) {
       // Si el error es relacionado con la verificación de correo, mostrar un mensaje específico
@@ -124,7 +124,7 @@ export default class LogInComponent {
       await this._authService.singInWithGoogle();
 
       toast.success('¡Bienvenido de nuevo!'); // Muestra un mensaje de éxito al usuario.
-      this._router.navigateByUrl('/home'); // Redirige al usuario a la página de tareas.
+      this._router.navigateByUrl('/home/tool-panel'); // Redirige al usuario a la página de tareas.
     } catch (error) {
       toast.error('Ocurrió un error.'); // Muestra un mensaje de error si la autenticación falla.
     }
