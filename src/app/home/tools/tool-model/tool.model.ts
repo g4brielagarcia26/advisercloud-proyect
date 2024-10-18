@@ -2,10 +2,16 @@
 
 //Es una plantilla para las herramientas que usaremos
 export interface ToolModel {
+    category: string;
+    description: string;
+    detail: string;
+    developedBy: string;
+    // images: Array<string>
+    // logo: string;
     id: string;
     name: string;
-    description: string;
-    price: number
-    //image: string; // Ruta a la imagen de la herramienta
-    // Agrega más propiedades según tus necesidades
+    price: number;
+    properties: Array<string>;
+    subcategory: string;
+    video: string;
 }

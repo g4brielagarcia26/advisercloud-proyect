@@ -1,5 +1,5 @@
 import { Routes } from "@angular/router";
-import { publicGuard } from "../../core/guards/auth.guards";
+import { privateGuard, publicGuard } from "../../core/guards/auth.guards";
 
 // Ruta hija para definir SigInComponent
 export default [
@@ -16,11 +16,11 @@ export default [
   {
     path: 'send-email',
     loadComponent: () => import('./send-email/send-email.component'),
-    canActivate: [publicGuard()]
+    canActivate: [privateGuard()]
   },
   {
     path: 'forgot-password',
     loadComponent: () => import('./forgot-password/forgot-password.component'),
-    canActivate: [publicGuard()]
+    canActivate: [privateGuard()]
   }
 ] as Routes
