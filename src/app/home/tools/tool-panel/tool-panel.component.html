@@ -1,6 +1,7 @@
-<div class="tool-container" (click)="openModal()">
+<div class="tool-container" >
   <div *ngFor="let tool of tools | async"
-    class="w-full flex justify-between items-start shadow rounded-md border p-3 bg-gray-50 border-b-gray-200 text-gray-900 hover:border-2 hover:border-emerald-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:hover:border-2 dark:hover:border-emerald-500">
+    class="w-full flex justify-between items-start shadow rounded-md border p-3 bg-gray-50 border-b-gray-200 text-gray-900 hover:border-2 hover:border-emerald-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:hover:border-2 dark:hover:border-emerald-500"
+    (click)="onToolSelected(tool)">
     <div class="relative w-full pl-2">
       <span class="font-medium text-sm text-emerald-500 absolute pr-1 right-0">
         {{ tool.price === 0 ? 'Gratis' : tool.price + '€' }}
@@ -20,6 +21,6 @@
 </div>
 
 <!-- Modal -->
-@if (showModal) {
-<app-tool-detail (closeModal)="closeModal()" />
+@if (showModal && selectedTool) {
+  <app-tool-detail [toolData]="selectedTool" (closeModal)="closeModal()"></app-tool-detail>
 }
