@@ -58,8 +58,9 @@ export class AuthService {
       const userData = {
         uid, // UID del usuario proporcionado por Firebase Authentication
         email: user.email, // Correo electrónico del usuario
-        firstName: user.firstName, // Primer nombre del usuario
-        lastName: user.lastName, // Apellido del usuario
+        displayName: `${user.firstName} ${user.lastName}`,
+        // firstName: user.firstName, // Primer nombre del usuario
+        // lastName: user.lastName, // Apellido del usuario
         authMethod: 'email', //Método con el que se ha autenticado el usuario
         createdAt: new Date(), // Fecha de creación del registro del usuario
       };
@@ -203,4 +204,5 @@ export class AuthService {
       throw new Error('Error en submit');
     }
   }
+
 } // :)
