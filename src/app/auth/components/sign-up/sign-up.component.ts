@@ -1,9 +1,18 @@
 import { Component, HostListener, inject } from '@angular/core';
-import { FormBuilder, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { AuthService } from '../../data-access/auth.service';
 import { Router, RouterLink } from '@angular/router';
 import { toast } from 'ngx-sonner';
-import { isRequired, hasEmailError, hasPasswordError } from '../../utils/validators/validators';
+import {
+  isRequired,
+  hasEmailError,
+  hasPasswordError,
+} from '../../utils/validators/validators';
 import { GoogleButtonComponent } from '../google-button/google-button.component';
 import { CommonModule } from '@angular/common';
 
@@ -18,12 +27,16 @@ interface FormSignUp {
 @Component({
   selector: 'app-sign-up',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, GoogleButtonComponent, RouterLink],
+  imports: [
+    ReactiveFormsModule,
+    CommonModule,
+    GoogleButtonComponent,
+    RouterLink,
+  ],
   templateUrl: './sign-up.component.html',
-  styles: ``
+  styles: ``,
 })
 export default class SignUpComponent {
-
   // Inyección de dependencias para utilizar los servicios necesarios.
   private _formBuilder = inject(FormBuilder);
   private _authService = inject(AuthService);
@@ -39,19 +52,17 @@ export default class SignUpComponent {
   form = this._formBuilder.group<FormSignUp>({
     firstName: this._formBuilder.control('', Validators.required),
     lastName: this._formBuilder.control('', Validators.required),
-    email: this._formBuilder.control(
-      '',
-      [
-        Validators.required, // El campo no puede estar vacío.
-        Validators.email // Formato de correo@correo.com
-      ]),
-    password: this._formBuilder.control(
-      '',
-      [
-        Validators.required,
-        Validators.minLength(12), // Longitud mínima de 12 caracteres.
-        Validators.pattern('^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{12,}$')
-      ]),
+    email: this._formBuilder.control('', [
+      Validators.required, // El campo no puede estar vacío.
+      Validators.email, // Formato de correo@correo.com
+    ]),
+    password: this._formBuilder.control('', [
+      Validators.required,
+      Validators.minLength(12), // Longitud mínima de 12 caracteres.
+      Validators.pattern(
+        '^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{12,}$'
+      ),
+    ]),
   });
 
   // Método para verificar si un campo es requerido
@@ -71,7 +82,6 @@ export default class SignUpComponent {
 
   // Método para manejar el envío del formulario
   async submit() {
-
     // Marca que se ha intentado enviar el formulario
     // El flag cambia a true una vez que entra en el método submit.
     this.attemptedSubmit = true;
@@ -98,19 +108,27 @@ export default class SignUpComponent {
 
     try {
       // Intenta registrar al usuario utilizando el servicio de autenticación
-      await this._authService.signUp({ firstName, lastName, email, password });
+      await this._authService.signUp({
+        firstName,
+        lastName,
+        email,
+        password,
+        displayName: `${firstName} ${lastName}`,
+        authMethod:'email'
+      });
       toast.success('Usuario creado correctamente.'); // Mensaje de éxito
 
       // Envía el correo de verificación
-    await this._authService.sendVerificationEmail();
-    toast.success('Correo de verificación enviado.');
+      await this._authService.sendVerificationEmail();
+      toast.success('Correo de verificación enviado.');
 
-    // Redirige al componente de verificación de correo
-    this._router.navigateByUrl('/auth/send-email');
-
+      // Redirige al componente de verificación de correo
+      this._router.navigateByUrl('/auth/send-email');
     } catch (error) {
       // Manejo de errores al intentar registrar al usuario
-      toast.error((error as Error).message || 'Ocurrió un error al crear el usuario.');
+      toast.error(
+        (error as Error).message || 'Ocurrió un error al crear el usuario.'
+      );
     }
   }
   //Escucha el evento de pulsar la tecla enter para enviar el formulario
@@ -137,5 +155,4 @@ export default class SignUpComponent {
   showPassword() {
     this.isPasswordVisible = !this.isPasswordVisible;
   }
-
 } // :)

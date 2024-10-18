@@ -13,6 +13,7 @@ import {
   collection,
   doc,
   Firestore,
+  getDoc,
   getDocs,
   query,
   setDoc,
@@ -24,8 +25,12 @@ import { AuthStateService } from '../../shared/data-access/auth-state.service';
 export interface User {
   firstName: string;
   lastName: string;
+  displayName: string;
   email: string;
   password: string;
+  authMethod: string;
+  photoURL?: string;
+  initial?: string;
 }
 
 @Injectable({
@@ -58,9 +63,9 @@ export class AuthService {
       const userData = {
         uid, // UID del usuario proporcionado por Firebase Authentication
         email: user.email, // Correo electrónico del usuario
-        displayName: `${user.firstName} ${user.lastName}`,
-        // firstName: user.firstName, // Primer nombre del usuario
-        // lastName: user.lastName, // Apellido del usuario
+        firstName: user.firstName, // Primer nombre del usuario
+        lastName: user.lastName, // Apellido del usuario
+        displayName: `${user.firstName} ${user.lastName}`, //Nombre completo
         authMethod: 'email', //Método con el que se ha autenticado el usuario
         createdAt: new Date(), // Fecha de creación del registro del usuario
       };
@@ -70,7 +75,10 @@ export class AuthService {
 
       // Llama al método para actualizar el estado de autenticación.
       this._authState.setUserState(userCredential.user);
-      console.log('Estado de usuario actualizado en AuthStateService:', userCredential.user);
+      console.log(
+        'Estado de usuario actualizado en AuthStateService:',
+        userCredential.user
+      );
 
       // Devolver las credenciales del usuario creado.
       return userCredential;
@@ -87,8 +95,8 @@ export class AuthService {
    */
   async signIn(user: Pick<User, 'email' | 'password'>) {
     try {
-      console.log('Itentando iniciar sesion con: ',user.email);
-      
+      console.log('Itentando iniciar sesion con: ', user.email);
+
       // Iniciar sesión con email y contraseña
       const userCredential = await signInWithEmailAndPassword(
         this._auth,
@@ -99,7 +107,6 @@ export class AuthService {
       // Obtener el usuario autenticado
       const currentUser = userCredential.user;
       console.log('Usuario autenticado:', currentUser);
-      
 
       // Verificar si el correo ha sido verificado
       if (!currentUser.emailVerified) {
@@ -110,7 +117,10 @@ export class AuthService {
 
       // Llama al método para actualizar el estado de autenticación.
       this._authState.setUserState(currentUser);
-      console.log('Estado de usuario actualizado en AuthStateService:', currentUser);
+      console.log(
+        'Estado de usuario actualizado en AuthStateService:',
+        currentUser
+      );
 
       // Si el correo está verificado, retornar las credenciales
       return userCredential;
@@ -141,7 +151,7 @@ export class AuthService {
         uid, // UID del usuario proporcionado por Firebase Authentication
         email: userCredential.user?.email, // Correo electrónico del usuario
         displayName: userCredential.user?.displayName, //Nombre completo del usuario
-        authMethod:'google', //Método con el que se ha autenticado el usuario
+        authMethod: 'google', //Método con el que se ha autenticado el usuario
         createdAt: new Date(), // Fecha de creación del registro del usuario
       };
 
@@ -149,12 +159,46 @@ export class AuthService {
       await setDoc(doc(this._firestore, `users/${uid}`), userData);
 
       // Devolver las credenciales del usuario autenticado.
-      return userCredential
-
+      return userCredential;
     } catch (error) {
       // En caso de error, lanzar un mensaje detallado con el error ocurrido durante el inicio de sesión con Google.
-      throw new Error('Error al iniciar sesión con Google: ' + (error as Error).message);
+      throw new Error(
+        'Error al iniciar sesión con Google: ' + (error as Error).message
+      );
     }
+  }
+
+  /**
+   * Método en el que recoge los datos del usuario desde fireStore.
+   * @param uid -El identificador único del usuario.
+   * @returns -Una promesa que se resuelve con los datos del usuario como un objeto de tipo User, o null si el usuario no existe.
+   */
+  async getUserData(uid: string): Promise<User | null> {
+    try {
+      const userDoc = await getDoc(doc(this._firestore, `users/${uid}`));
+      if (userDoc.exists()) {
+        const userData = userDoc.data() as User;
+        if (userData.displayName) {
+          userData.initial = this.getInitial(userData.displayName);
+        }
+        return userData;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      throw new Error(
+        'Error al obtener los datos del usuario: ' + (error as Error).message
+      );
+    }
+  }
+
+  /**
+   * Función que devuelve la inicial de un nombre en mayúsculas.
+   * @param name -El nombre del cual se quiere obtener la inicial.
+   * @returns -La inicial del nombre en mayúsculas.
+   */
+  getInitial(name: string): string {
+    return name.charAt(0).toUpperCase();
   }
 
   /**
@@ -197,12 +241,9 @@ export class AuthService {
    */
   async sendPasswordResetEmail(email: string): Promise<void> {
     try {
-
       await sendPasswordResetEmail(this._auth, email);
-
     } catch (error) {
       throw new Error('Error en submit');
     }
   }
-
 } // :)

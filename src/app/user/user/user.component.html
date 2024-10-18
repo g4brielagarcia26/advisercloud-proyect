@@ -1,14 +1,33 @@
 <section class="flex flex-col justify-center items-center h-screen">
   <div
-    *ngIf="(user$ | async) as user"
-    class="w-full rounded-lg sm:border sm:border-gray-200 sm:shadow-xl sm:dark:border-gray-700 sm:max-w-md sm:dark:bg-gray-800 px-6 max-h-[800px]"
+    *ngIf="userData"
+    class="w-full rounded-lg sm:border sm:border-gray-200 sm:shadow-xl sm:dark:border-gray-700 sm:max-w-md sm:dark:bg-gray-800 max-h-[800px]"
   >
-    <div class="w-1/2 mx-auto py-10">
-      <h1 class="text-4xl dark:text-white">
-        ¡Bienvenido! <strong class="text-green-600">{{user?.displayName}}</strong>
-      </h1>
+  <div class="flex justify-center p-2 mt-2">
+    <div *ngIf="userData.photoURL; else showInitial">
+      <img
+        [src]="userData.photoURL"
+        alt="Profile Photo"
+        class="rounded-full w-10 h-10"
+      />
     </div>
-    
-
+    <ng-template #showInitial>
+      <div
+        class="w-9 h-9 text-2xl font-sans font-bold bg-emerald-600 text-white flex items-center rounded-full justify-center"
+      >
+        {{ userData.initial }}
+      </div>
+    </ng-template>
+  </div>
+    <div class="mx-auto py-2 px-3 text-left font-sans dark:text-white">
+      <h1 class="text-xl w-full pb-3">
+        ¡Bienvenido!
+        <strong class="text-emerald-600">{{
+          userData.displayName.toUpperCase()
+        }}</strong>
+      </h1>
+      <p>Registrado con {{ userData.authMethod }}</p>
+      <p class="text-gray-700 dark:text-gray-500">{{ userData.email }}</p>
+    </div>
   </div>
 </section>
