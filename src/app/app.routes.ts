@@ -14,7 +14,6 @@ export const routes: Routes = [
   },
   {
     // Guardia que protege la ruta, permitiendo el acceso solo si se cumplen las condiciones.
-    canActivate: [publicGuard()], 
     path: 'auth',
     // Carga las rutas hijas desde auth.routes de forma asíncrona.
     loadChildren: () => import('./auth/components/auth.routes'), 
