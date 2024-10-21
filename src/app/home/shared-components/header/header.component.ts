@@ -1,15 +1,10 @@
-import {
-  Component,
-  EventEmitter,
-  HostListener,
-  Output,
-  ElementRef,
-} from '@angular/core';
+import { Component, EventEmitter, HostListener, Output, ElementRef } from '@angular/core';
 import { NavigationEnd, NavigationError, NavigationStart, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthStateService } from '../../../shared/data-access/auth-state.service';
 import { NgClass } from '@angular/common';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { User } from '@angular/fire/auth';
+import { SearchService } from '../search/search.service';
 
 @Component({
   selector: 'app-header',
@@ -18,6 +13,7 @@ import { User } from '@angular/fire/auth';
   templateUrl: './header.component.html',
 })
 export class HeaderComponent {
+
   // Emitimos el evento hacia nuestro componente Layout.
   @Output() toggleSidebar: EventEmitter<void> = new EventEmitter<void>();
   // Emitimos el estado de autenticación hacia el componente Layout
@@ -25,10 +21,8 @@ export class HeaderComponent {
 
   public user: User | null = null;
 
-  /**
-   * Estado de autenticación del usuario.
-   * Esta propiedad almacena si el usuario está autenticado o no.
-   * Se actualiza dinámicamente a través del servicio AuthStateService.
+  /* Estado de autenticación del usuario. Esta propiedad almacena si el usuario está autenticado o no.
+  Se actualiza dinámicamente a través del servicio AuthStateService.
    */
   isAuthenticated = false;
   // Inicializa la variable isDropdownUserOpen como false, indicando que el dropdown del usuario está cerrado por defecto.
@@ -43,7 +37,8 @@ export class HeaderComponent {
   constructor(
     private authStateService: AuthStateService,
     private router: Router,
-    private elementRef: ElementRef // Inyectamos ElementRef para acceder al DOM.
+    private elementRef: ElementRef, // Inyectamos ElementRef para acceder al DOM.
+    private searchService: SearchService 
   ) {
     // Suscripción al estado de autenticación del servicio.
     this.authStateService.authState$.subscribe((user) => {
@@ -91,6 +86,24 @@ export class HeaderComponent {
       });
   }
 
+  // Método para manejar eventos de búsqueda en el componente.
+  onSearch(event: Event): void {
+    // Convierte event.target al tipo HTMLInputElement.
+    // Esto permite acceder a las propiedades del elemento de entrada, como value, que contiene el texto ingresado por el usuario.
+    const inputElement = event.target as HTMLInputElement;
+    
+    // Comprueba que inputElement no sea null o undefined y que inputElement.value contenga algún valor. 
+    if (inputElement && inputElement.value) {
+
+      // Almacena el valor del campo de entrada en la variable term.
+      const term = inputElement.value;
+      
+      // Llama al método changeSearchTerm del servicio SearchService, pasando el término de búsqueda como argumento. 
+      // Esto actualiza el valor del BehaviorSubject en el servicio, lo cual notifica a todos los componentes suscritos que el término de búsqueda ha cambiado.
+      this.searchService.changeSearchTerm(term); 
+    }
+  }
+
   // Método para emitir el evento y que el sidebar pueda cerrarse.
   onToggleSidebar() {
     this.toggleSidebar.emit(); // Emitimos el evento para notificar al layout
@@ -103,7 +116,7 @@ export class HeaderComponent {
 
     console.log('user:', this.user); // Verifica que 'user' no sea null
     console.log('emailVerified: ', this.user?.emailVerified); // Verifica si el email está verificado
-    
+
     if (!this.isAuthenticated) {
       console.log(
         'Redirigiendo a /auth/log-in porque el usuario no está autenticado'

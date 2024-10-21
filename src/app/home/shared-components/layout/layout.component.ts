@@ -2,7 +2,6 @@ import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { HeaderComponent } from '../header/header.component';
-import { FooterComponent } from '../footer/footer.component';
 import ToolPanelComponent from '../../tools/tool-panel/tool-panel.component';
 import { CommonModule } from '@angular/common';
 import { FiltersComponent } from '../filters/filters.component';
@@ -18,7 +17,6 @@ import { Subscription } from 'rxjs';
     CommonModule,
     SidebarComponent,
     HeaderComponent,
-    FooterComponent,
     ToolPanelComponent,
     FiltersComponent,
   ],
