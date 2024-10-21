@@ -4,6 +4,7 @@ import { routes } from './app.routes';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { getStorage, provideStorage } from '@angular/fire/storage'; // Importa el módulo de Storage
 
 // Configuración del Firebase
 
@@ -20,7 +21,8 @@ export const appConfig: ApplicationConfig = {
       messagingSenderId: "883159671359"
     })),
     provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore())
+    provideFirestore(() => getFirestore()),
+    provideStorage(() => getStorage()) // Provee el servicio de Storage
   ]
 };
 
