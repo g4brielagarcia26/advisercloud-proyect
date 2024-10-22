@@ -4,20 +4,23 @@ import {
   HostListener,
   Output,
   ElementRef,
+  inject,
 } from '@angular/core';
 import { NavigationEnd, NavigationError, NavigationStart, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthStateService } from '../../../shared/data-access/auth-state.service';
-import { NgClass } from '@angular/common';
+import { CommonModule, NgClass } from '@angular/common';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { User } from '@angular/fire/auth';
+import { AuthService } from '../../../auth/data-access/auth.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, NgClass, SidebarComponent],
+  imports: [CommonModule ,RouterOutlet, RouterLink, NgClass, SidebarComponent],
   templateUrl: './header.component.html',
 })
 export class HeaderComponent {
+  _authService = inject (AuthService);
   // Emitimos el evento hacia nuestro componente Layout.
   @Output() toggleSidebar: EventEmitter<void> = new EventEmitter<void>();
   // Emitimos el estado de autenticación hacia el componente Layout
@@ -33,6 +36,8 @@ export class HeaderComponent {
   isAuthenticated = false;
   // Inicializa la variable isDropdownUserOpen como false, indicando que el dropdown del usuario está cerrado por defecto.
   isDropdownUserOpen = false;
+
+  userInitial: string | null = null;
 
   /**
    * Constructor del componente.
@@ -52,6 +57,10 @@ export class HeaderComponent {
       this.user = user;
       // Emitimos el estado de autenticación cada vez que cambie.
       this.authStatus.emit(this.isAuthenticated);
+
+      if ( this.isAuthenticated && this.user?.emailVerified){
+        this.loadUserInitial();
+      }
     });
   }
 
@@ -89,6 +98,21 @@ export class HeaderComponent {
       .catch((error) => {
         console.error('Error al cerrar sesión:', error); // Maneja errores en la consola si ocurre alguno.
       });
+  }
+
+/**
+ * Carga las iniciales del usuario autenticado.
+ * Este método obtiene los datos del usuario autenticado desde el servicio AuthService
+ * y establece la inicial del usuario en la variable userInitial.
+ */
+  loadUserInitial() {
+    if (this.user) {
+      this._authService.getUserData(this.user.uid).then((userData) => {
+        if (userData) {
+          this.userInitial = userData.initial || '';
+        }
+      });
+    }
   }
 
   // Método para emitir el evento y que el sidebar pueda cerrarse.

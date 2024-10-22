@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Auth, authState, signOut, User } from '@angular/fire/auth';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { doc, docData, Firestore } from '@angular/fire/firestore';
+import { BehaviorSubject, map, Observable, of, switchMap } from 'rxjs';
 
 /**
  * Servicio que maneja el estado de autenticación del usuario.
@@ -16,7 +17,7 @@ export class AuthStateService {
   public emailVerified = false;// Variable pública que indica si el correo del usuario está verificado
 
   // Constructor del servicio de autenticación, donde se inyecta el servicio de autenticación de Firebase
-  constructor(private _auth: Auth) {
+  constructor(private _auth: Auth, private firestore: Firestore) {
     // Suscripción al estado de autenticación del usuario.
     authState(this._auth).subscribe((user: User | null) => [
       console.log('Usuario autenticado en AuthStateService:', user),
@@ -41,18 +42,43 @@ export class AuthStateService {
     return this.userSubject.asObservable(); // Devuelve el observable asociado al BehaviorSubject para permitir la suscripción desde otros componentes o servicios.
   }
 
+    /**
+   * Método para verificar el estado de autenticación del usuario.
+   * Se suscribe a authState.
+   * @returns Un observable que emite los datos del usuario si está autenticado.
+   */
+    check(): Observable<any> {
+      return authState(this._auth).pipe(
+        switchMap((auth: any) => {
+          if (auth) {
+            // Usuario autenticado
+            const userReference = doc(this.firestore, `users/${auth.uid}`);
+            return docData(userReference).pipe(
+            map((userData: any) => {
+              console.log('Datos del usuario en Firestore', userData);
+              return {...auth, ...userData, emailVerified:auth.emailVerified}
+            })
+          )
+          } else {
+            // Usuario no autenticado
+            return of(null);
+          }
+        })
+      );
+    }
+
   /**
    * Método para forzar la actualización del estado usuario
    * crea una promesa que se resuelve cuando el usuario ha sido actualizado
   */
-  public updateUserState(): Promise<void> {
-    return new Promise((resolve) => { // Crea una nueva promesa
-      authState(this._auth).subscribe((user: User | null) => { // Suscríbete al estado de autenticación de Firebase
-        this.setUserState(user); // Actualiza el estado del usuario usando setUserState
-        resolve(); // Resuelve la promesa cuando el estado del usuario se ha actualizado
-      });
-    });
-  }
+  // public updateUserState(): Promise<void> {
+  //   return new Promise((resolve) => { // Crea una nueva promesa
+  //     authState(this._auth).subscribe((user: User | null) => { // Suscríbete al estado de autenticación de Firebase
+  //       this.setUserState(user); // Actualiza el estado del usuario usando setUserState
+  //       resolve(); // Resuelve la promesa cuando el estado del usuario se ha actualizado
+  //     });
+  //   });
+  // }
 
   /**
    * Cierra la sesión del usuario.

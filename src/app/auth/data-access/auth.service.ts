@@ -142,10 +142,15 @@ export class AuthService {
     try {
       // Proveedor de autenticación de Google.
       const provider = new GoogleAuthProvider();
+      //Forzar selección de cuenta
+      provider.setCustomParameters({
+        prompt: 'select_account',
+      });
       // Llamada a Firebase Authentication para iniciar sesión con el popup de Google.
       const userCredential = await signInWithPopup(this._auth, provider);
       // Obtener el UID (Identificador Único) del usuario autenticado.
       const uid = userCredential.user?.uid;
+
       // Estructuramos los datos del usuario que queremos guardar en Firestore, incluyendo el correo y los nombres.
       const userData = {
         uid, // UID del usuario proporcionado por Firebase Authentication
