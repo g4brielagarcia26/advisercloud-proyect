@@ -4,6 +4,7 @@ import { AuthStateService } from '../../../shared/data-access/auth-state.service
 import { NgClass } from '@angular/common';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { User } from '@angular/fire/auth';
+// Cambio
 import { SearchService } from '../search/search.service';
 
 @Component({
@@ -38,7 +39,8 @@ export class HeaderComponent {
     private authStateService: AuthStateService,
     private router: Router,
     private elementRef: ElementRef, // Inyectamos ElementRef para acceder al DOM.
-    private searchService: SearchService 
+    // Cambio
+    private searchService: SearchService
   ) {
     // Suscripción al estado de autenticación del servicio.
     this.authStateService.authState$.subscribe((user) => {
@@ -85,24 +87,24 @@ export class HeaderComponent {
         console.error('Error al cerrar sesión:', error); // Maneja errores en la consola si ocurre alguno.
       });
   }
+ 
+  // Cambio
 
   // Método para manejar eventos de búsqueda en el componente.
-  onSearch(event: Event): void {
-    // Convierte event.target al tipo HTMLInputElement.
-    // Esto permite acceder a las propiedades del elemento de entrada, como value, que contiene el texto ingresado por el usuario.
-    const inputElement = event.target as HTMLInputElement;
-    
-    // Comprueba que inputElement no sea null o undefined y que inputElement.value contenga algún valor. 
-    if (inputElement && inputElement.value) {
+onSearch(event: Event): void {
+  // Convierte event.target al tipo HTMLInputElement.
+  // Esto permite acceder a las propiedades del elemento de entrada, como 'value', que contiene el texto ingresado por el usuario.
+  const inputElement = event.target as HTMLInputElement;
 
-      // Almacena el valor del campo de entrada en la variable term.
-      const term = inputElement.value;
-      
-      // Llama al método changeSearchTerm del servicio SearchService, pasando el término de búsqueda como argumento. 
-      // Esto actualiza el valor del BehaviorSubject en el servicio, lo cual notifica a todos los componentes suscritos que el término de búsqueda ha cambiado.
-      this.searchService.changeSearchTerm(term); 
-    }
+  // Verifica si inputElement no es null o undefined
+  if (inputElement) {
+    // Obtiene el valor del campo de entrada. Si el valor es null o undefined, se asigna una cadena vacía.
+    const term = inputElement.value || ''; 
+
+    // Llama al método changeSearchTerm del servicio de búsqueda para actualizar el término de búsqueda actual.
+    this.searchService.changeSearchTerm(term);
   }
+}
 
   // Método para emitir el evento y que el sidebar pueda cerrarse.
   onToggleSidebar() {

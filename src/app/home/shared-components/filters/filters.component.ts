@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
@@ -15,8 +15,13 @@ export class FiltersComponent {
   buttons = ['Todo', 'Populares', 'Gratis', 'Pago'];
   selectedButton: string = 'Todo'; // Botón seleccionado inicialmente
 
+  // Evento de salida para comunicar el filtro seleccionado
+  @Output() filterChange = new EventEmitter<string>();
+
   selectButton(button: string) {
     this.selectedButton = button;
+    // Emitir el botón seleccionado para que ToolPanel lo reciba.
+    this.filterChange.emit(button);
   }
 
   isFiltersOpen = false;
