@@ -7,7 +7,7 @@ export interface ToolModel {
     detail: string;
     developedBy: string;
     // images: Array<string>
-    // logo: string;
+    logo: string;
     id: string;
     name: string;
     price: number;

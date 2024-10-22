@@ -14,13 +14,17 @@
   }
 
   <!-- Contenedor principal -->
-  <section class="content w-5/6 sm:w-4/5 2xl:w-3/4 mx-auto my-2 md:my-8">
-    <app-filters></app-filters>
+  <section class="content w-5/6 sm:w-4/5 2xl:w-[70%] mx-auto my-2 md:my-8">
     <router-outlet />
   </section>
 
   <!-- Footer -->
   <footer class="footer mt-4 md:mt-0 bg-gray-50 dark:bg-gray-900 h-14">
-    <app-footer />
+    <div
+      class="text-sm md:text-base flex items-center justify-start border-t border-gray-300 dark:border-none dark:text-gray-50 p-4">
+      <p class="text-gray-700 dark:text-gray-300">
+        © 2024 Lorem ipsum dolor sit amet consectetur adipisicing elit.
+      </p>
+    </div>
   </footer>
-</div>/
+</div>
