@@ -33,6 +33,9 @@ export default class ToolPanelComponent {
   // BehaviorSubject para gestionar el filtro seleccionado por los botones.
   private selectedFilter = new BehaviorSubject<string>('Todo');
 
+  // BehaviorSubject para gestionar el filtro de subcategorías
+  private selectedSubcategories = new BehaviorSubject<string[]>([]);
+
   constructor(
     // Servicio para manejar datos relacionados con las herramientas
     private toolService: ToolService, 
@@ -61,17 +64,23 @@ export default class ToolPanelComponent {
     );
   }
 
-  private initializeFilteredTools() {
+  private initializeFilteredTools() { 
+    
     // Combina el observable de herramientas, el término de búsqueda y el filtro seleccionado.
+    // Esto asegura que cada vez que cambie cualquiera de estos, el listado de herramientas se actualizará automáticamente.
     this.filteredTools = combineLatest([
-      this.tools,
-      this.searchService.currentSearchTerm,
-      this.selectedFilter // Filtro por botones
+      this.tools, // Observable que emite el listado de herramientas.
+      this.searchService.currentSearchTerm, // Observable que emite el término de búsqueda ingresado por el usuario.
+      this.selectedFilter, // Observable que emite el filtro seleccionado (ej. "Populares", "Gratis", "Pago").
+      this.selectedSubcategories
     ]).pipe(
-      map(([tools, searchTerm, filter]) => {
-        let filtered = tools;
+      // Se aplica una transformación a los valores combinados mediante un operador 'map'.
+      map(([tools, searchTerm, filter, subcategories]) => {
+        let filtered = tools; // Se inicializa con el listado completo de herramientas.
 
-        // Filtrar por término de búsqueda
+        // Filtrar por término de búsqueda.
+        // Si el término de búsqueda no está vacío, se filtra el listado de herramientas
+        // para mostrar solo aquellas cuyo nombre o detalle incluyen el término ingresado (ignorando mayúsculas/minúsculas).
         if (searchTerm.trim()) {
           filtered = filtered.filter(tool =>
             tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -79,25 +88,41 @@ export default class ToolPanelComponent {
           );
         }
 
-        // Filtrar por categoría (Populares, Gratis, Pago) o mostrar Todo
+        // Filtrar por categoría seleccionada (Populares, Gratis, Pago) o mostrar Todo.
         switch (filter) {
           case 'Populares':
+            // Filtra las herramientas que pertenecen a la categoría "populares".
             filtered = filtered.filter(tool => tool.category === 'populares');
             break;
           case 'Gratis':
+            // Filtra las herramientas cuyo precio es 0 (gratuitas).
             filtered = filtered.filter(tool => tool.price === 0);
             break;
           case 'Pago':
+            // Filtra las herramientas cuyo precio es mayor a 0 (de pago).
             filtered = filtered.filter(tool => tool.price > 0);
             break;
           default:
-            // Si es "Todo", no se aplica ningún filtro adicional.
+            // Si el filtro es "Todo", no se aplica ningún filtro adicional, mostrando todas las herramientas.
             break;
         }
 
+        // Filtrado por subcategorías seleccionadas
+        if (subcategories.length > 0) {
+          filtered = filtered.filter(tool =>
+            subcategories.includes(tool.subcategory)
+          );
+        }
+
+        // Retorna el listado de herramientas filtradas según los criterios aplicados.
         return filtered;
       })
     );
+  }
+
+  // Método para actualizar el filtro de subcategorías
+  onSubcategoryFilterChange(subcategories: string[]) {
+    this.selectedSubcategories.next(subcategories);
   }
 
   // Método que se llamará cuando se cambie el filtro en FiltersComponent.
