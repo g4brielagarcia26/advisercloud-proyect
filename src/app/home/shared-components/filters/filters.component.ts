@@ -27,6 +27,15 @@ export class FiltersComponent {
 
   isFiltersOpen = false;
 
+  // Estado para almacenar los filtros seleccionados
+  selectedFilters: { [key: string]: boolean } = {
+    design: false,
+    frameworks: false,
+    tools: false,
+    ide: false,
+    browser: false,
+  };
+
   toggleFilters() {
     this.isFiltersOpen = !this.isFiltersOpen;
   }
@@ -38,25 +47,35 @@ export class FiltersComponent {
   }
 
   // Método actualizado en el componente
-onSubcategoryChange(subcategory: string, event: Event) {
-  const inputElement = event.target as HTMLInputElement;
-  const isChecked = inputElement?.checked;
+  onSubcategoryChange(subcategory: string, filter: string, event: any) {
+    // Obtener el elemento de entrada del evento y verificar si está marcado
+    const inputElement = event.target as HTMLInputElement;
+    // Verifica si el checkbox está marcado
+    const isChecked = inputElement?.checked;
+     // Actualizar el estado del filtro seleccionado en base a si el checkbox está marcado o no
+    this.selectedFilters[filter] = event.target.checked;
 
-  if (isChecked !== undefined) {
-    let currentSelections = this.selectedSubcategories.value;
+    // Si el valor de isChecked no es undefined (el checkbox es válido)
+    if (isChecked !== undefined) {
+      // Obtener las subcategorías actualmente seleccionadas
+      let currentSelections = this.selectedSubcategories.value;
 
-    if (isChecked) {
-      currentSelections.push(subcategory);
-    } else {
-      currentSelections = currentSelections.filter(item => item !== subcategory);
+      // Si el checkbox está marcado, agregar la subcategoría a las seleccionadas
+      if (isChecked) {
+        currentSelections.push(subcategory);
+      } else {
+        // Si no está marcado, eliminar la subcategoría de las seleccionadas
+        currentSelections = currentSelections.filter(item => item !== subcategory);
+      }
+
+      // Emitir los cambios de las subcategorías seleccionadas 
+      // Actualiza el observable con la nueva lista
+      this.selectedSubcategories.next(currentSelections);  
+      // Emitir un evento con la lista actualizada de subcategorías seleccionadas
+      this.subcategoryFilterChange.emit(currentSelections);
     }
-
-    // Emitir los cambios de las subcategorías seleccionadas
-    this.selectedSubcategories.next(currentSelections);
-    this.subcategoryFilterChange.emit(currentSelections);
   }
-}
-  
+
   /**
  * Verifica si la ruta actual incluye la subruta especificada.
  * @param route - La subruta a verificar en la URL actual.

@@ -49,35 +49,35 @@
           <label
             class="flex items-center py-2 px-4 space-x-2 border-gray-200 hover:bg-emerald-100 dark:hover:bg-gray-700"
           >
-            <input type="checkbox" class="dark:checked:bg-gray-700" (change)="onSubcategoryChange('design', $event)" />
+            <input type="checkbox" class="dark:checked:bg-gray-700" (change)="onSubcategoryChange('design', 'design', $event)" [checked]="selectedFilters['design']" />
             <span>Diseño</span>
           </label>
           <!-- Filtro 2 -->
           <label
           class="flex items-center py-2 px-4 space-x-2 border-gray-200 hover:bg-emerald-100 dark:hover:bg-gray-700"
           >
-            <input type="checkbox" class="" (change)="onSubcategoryChange('frameworks', $event)" />
+            <input type="checkbox" class="" (change)="onSubcategoryChange('frameworks', 'frameworks', $event)" [checked]="selectedFilters['frameworks']"/>
             <span>Frameworks</span>
           </label>
           <!-- Filtro 3 -->
           <label
           class="flex items-center py-2 px-4 space-x-2 border-gray-200 hover:bg-emerald-100 dark:hover:bg-gray-700"
           >
-            <input type="checkbox" class="" (change)="onSubcategoryChange('tools', $event)" />
+            <input type="checkbox" class="" (change)="onSubcategoryChange('tools', 'tools', $event)" [checked]="selectedFilters['tools']"/>
             <span>Herramientas</span>
           </label>
           <!-- Filtro 4 -->
           <label
           class="flex items-center py-2 px-4 space-x-2 border-gray-200 hover:bg-emerald-100 dark:hover:bg-gray-700"
           >
-            <input type="checkbox" class="" (change)="onSubcategoryChange('ide', $event)" />
+            <input type="checkbox" class="" (change)="onSubcategoryChange('ide', 'ide', $event)" [checked]="selectedFilters['ide']"/>
             <span>IDEs</span>
           </label>
           <!-- Filtro 5 -->
           <label
             class="flex items-center py-2 px-4 space-x-2 hover:bg-emerald-100 dark:hover:bg-gray-700"
           >
-            <input type="checkbox" class="" (change)="onSubcategoryChange('browser', $event)" />
+            <input type="checkbox" class="" (change)="onSubcategoryChange('browser', 'browser', $event)" [checked]="selectedFilters['browser']"/>
             <span>Navegadores</span>
           </label>
         </form>

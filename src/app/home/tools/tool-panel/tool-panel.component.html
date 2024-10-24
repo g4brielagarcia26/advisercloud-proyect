@@ -1,10 +1,21 @@
 <!-- FilterComponent-->
-<app-filters 
-(filterChange)="onFilterChange($event)"
-(subcategoryFilterChange)="onSubcategoryFilterChange($event)"></app-filters>
+<app-filters
+  (filterChange)="onFilterChange($event)"
+  (subcategoryFilterChange)="onSubcategoryFilterChange($event)">
+</app-filters>
+
+<!-- Si filteredTools está vacío, muestra un mensaje de "No se encontraron resultados" -->
+@if ((filteredTools | async)?.length === 0) {
+  <div class="h-full flex items-start justify-center text-gray-400 dark:text-gray-300 mt-20">
+      <h2 class="text-base md:text-lg font-medium">
+        No se encontraron resultados para los filtros seleccionados
+      </h2>
+  </div>
+ }
 
 <!-- Contenido del ToolPanel -->
-<div class="tool-container " >
+<div class="tool-container" >
+  <!-- Si hay resultados, muestra las herramientas filtradas -->
   <div *ngFor="let tool of filteredTools | async"
     class="w-full flex justify-between items-start shadow rounded-md border p-3 bg-gray-50 border-b-gray-200 text-gray-900 hover:border-2 hover:border-emerald-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:hover:border-2 dark:hover:border-emerald-500"
     (click)="onToolSelected(tool)">
