@@ -114,7 +114,8 @@ export default class SignUpComponent {
         email,
         password,
         displayName: `${firstName} ${lastName}`,
-        authMethod:'email'
+        authMethod:'email',
+        roles: {cliente:true}
       });
       toast.success('Usuario creado correctamente.'); // Mensaje de éxito
 

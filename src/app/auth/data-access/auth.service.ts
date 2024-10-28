@@ -31,6 +31,10 @@ export interface User {
   authMethod: string;
   photoURL?: string;
   initial?: string;
+  roles: {
+    admin?: boolean;
+    cliente?: boolean;
+  }
 }
 
 @Injectable({
@@ -68,6 +72,7 @@ export class AuthService {
         displayName: `${user.firstName} ${user.lastName}`, //Nombre completo
         authMethod: 'email', //Método con el que se ha autenticado el usuario
         createdAt: new Date(), // Fecha de creación del registro del usuario
+        roles:{cliente:true}, //Se asigna rol de cliente por defecto
       };
 
       // Guardamos el objeto "userData" en Firestore bajo la colección "users", utilizando el UID como ID del documento.
@@ -158,6 +163,7 @@ export class AuthService {
         displayName: userCredential.user?.displayName, //Nombre completo del usuario
         authMethod: 'google', //Método con el que se ha autenticado el usuario
         createdAt: new Date(), // Fecha de creación del registro del usuario
+        roles: {cliente:true}, //Se asigna rol de cliente por defecto
       };
 
       // Guardamos el objeto "userData" en Firestore bajo la colección "users", utilizando el UID como ID del documento.
