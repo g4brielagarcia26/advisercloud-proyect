@@ -66,19 +66,25 @@ export class AuthStateService {
         })
       );
     }
-
-  /**
-   * Método para forzar la actualización del estado usuario
-   * crea una promesa que se resuelve cuando el usuario ha sido actualizado
-  */
-  // public updateUserState(): Promise<void> {
-  //   return new Promise((resolve) => { // Crea una nueva promesa
-  //     authState(this._auth).subscribe((user: User | null) => { // Suscríbete al estado de autenticación de Firebase
-  //       this.setUserState(user); // Actualiza el estado del usuario usando setUserState
-  //       resolve(); // Resuelve la promesa cuando el estado del usuario se ha actualizado
-  //     });
-  //   });
-  // }
+    
+/**
+ * Verifica si el usuario autenticado tiene el rol de 'cliente'.
+ * @returns Un observable que emite 'true' si el usuario tiene el rol de 'cliente', de lo contrario 'false'.
+ */
+    verifyUserRol(): Observable<boolean> {
+      return this.authState$.pipe(
+        switchMap((user:User | null)=> {
+          if (user) {
+            const userReference = doc(this.firestore, `users/${user.uid}`);
+            return docData(userReference).pipe(
+              map((userData: any)=> userData?.roles?.cliente === true)
+            )
+          } else {
+            return of(false);
+          }
+        })
+      )
+    }
 
   /**
    * Cierra la sesión del usuario.
