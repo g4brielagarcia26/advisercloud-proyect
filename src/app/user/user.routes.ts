@@ -6,5 +6,17 @@ export default [
   {
     path:'profile',
     loadComponent: () => import('./user/user.component')
-  }
+  },
+  {
+    path: 'admin-create',
+    loadComponent: () => import('./admin/create/create.component')
+  },
+  {
+    path:'admin-modify',
+    loadComponent: () => import('./admin/modify/modify.component')
+  },
+  {
+    path:'admin-delete',
+    loadComponent: () => import('./admin/delete/delete.component')
+  },
 ] as Routes 

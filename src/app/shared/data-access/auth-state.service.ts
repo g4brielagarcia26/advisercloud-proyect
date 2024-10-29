@@ -86,6 +86,25 @@ export class AuthStateService {
       )
     }
 
+   /**
+   * Verifica si el usuario autenticado tiene el rol de 'admin'.
+   * @returns Un observable que emite 'true' si el usuario tiene el rol de 'admin', de lo contrario 'false'.
+   */
+  verifyAdminRole(): Observable<boolean> {
+    return this.authState$.pipe(
+      switchMap((user: User | null) => {
+        if (user) {
+          const userReference = doc(this.firestore, `users/${user.uid}`);
+          return docData(userReference).pipe(
+            map((userData: any) => userData?.roles?.admin === true)
+          )
+        } else {
+          return of(false);
+        }
+      })
+    );
+  }
+
   /**
    * Cierra la sesión del usuario.
    * @returns Una promesa que se resuelve cuando el usuario ha cerrado sesión.
