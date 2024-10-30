@@ -1,21 +1,81 @@
-<section class="flex flex-col justify-center items-center h-screen">
-  <div
-    class="w-full rounded-lg sm:border sm:border-gray-200 sm:shadow-xl sm:dark:border-gray-700 sm:max-w-md sm:dark:bg-gray-800 px-6">
-    
-    <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+<section class="w-1/2 h-full m-auto bg-gray-800 rounded-lg">
+  <div class="">
+    <form class="p-10 space-y-3" [formGroup]="createToolForm">
 
-      <form class="space-y-4 md:space-y-6">
-      
-        <!-- Campo de correo electrónico -->
-        <div>
-          <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            Nombre
-          </label>
-          <input type="email" name="email" id="email"
-            class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-emerald-600 focus:border-emerald-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder="name@company.com" formControlName="email">
+      <div>
+        <label for="name" class="block mb-1 ml-1 text-sm font-medium text-gray-900 dark:text-white">Nombre</label>
+        <input type="text" id="name" formControlName="name"
+          class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
+      </div>
+
+      <div>
+        <label for="detail" class="block mb-1 ml-1 text-sm font-medium text-gray-900 dark:text-white">Detalle</label>
+        <textarea id="detail" formControlName="detail"
+          class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-1.5 resize-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"></textarea>
+      </div>
+
+      <div>
+        <label for="description"
+          class="block mb-1 ml-1 text-sm font-medium text-gray-900 dark:text-white">Descripción</label>
+        <textarea id="description" formControlName="description"
+          class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-1.5 resize-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"></textarea>
+      </div>
+
+      <div>
+        <label class="block mb-1 ml-1 text-sm font-medium text-gray-900 dark:text-white">Características</label>
+        <div formArrayName="properties" c>
+          <input type="text" [formControl]="propertyInput" (keydown.enter)="addProperty($event)"
+            placeholder="Presiona Enter para agregar"
+            class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-1.5 resize-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
+          <span *ngFor="let property of properties.controls; let i = index" class="dark:text-white font-medium">
+            {{ property.value }}
+            <button type="button" (click)="removeProperty(i)">✕</button>
+          </span>
         </div>
-      </form>
-    </div>
+      </div>
+
+      <div>
+        <label for="price" class="block mb-1 ml-1 text-sm font-medium text-gray-900 dark:text-white">Precio</label>
+        <input type="number" id="price" formControlName="price"
+          class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
+      </div>
+      
+      <div>
+        <label for="subcategory"
+        class="block mb-1 ml-1 text-sm font-medium text-gray-900 dark:text-white">Categoría</label>
+        <select id="subcategory" formControlName="subcategory" 
+            class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
+          <option value="design">Diseño</option>
+          <option value="frameworks">Frameworks</option>
+          <option value="tools">Herramientas</option>
+          <option value="ide">IDEs</option>
+          <option value="browsers">Navegadores</option>
+        </select>
+      </div>
+      
+      <div>
+        <label for="video"
+          class="block mb-1 ml-1 text-sm font-medium text-gray-900 dark:text-white">Video</label>
+        <input type="text" id="video" formControlName="video" placeholder="https://www.youtube.com/watch?v=123456"
+          class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
+      </div>
+      
+
+      <!-- Campo para subir imagen -->
+      <div>
+        <label for="images"
+          class="block mb-1 ml-1 text-sm font-medium text-gray-900 dark:text-white">Subir imagen</label>
+        <input type="file" id="images" accept="" formControlName="images" class="w-full">
+      </div>
+
+      <!-- Campo para subir imagen -->
+      <div>
+        <label for="logo"
+        class="block mb-1 ml-1 text-sm font-medium text-gray-900 dark:text-white">Subir logo</label>
+        <input type="file" id="logo" accept="" formControlName="logo" class="w-full">
+      </div>
+      
+      <button type="submit" class="mt-4 bg-blue-500 text-white p-2 rounded">Guardar</button>
+    </form>
   </div>
 </section>
