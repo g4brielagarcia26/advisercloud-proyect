@@ -63,6 +63,16 @@ export class AuthService {
       // Obtener el UID (Identificador Único) del usuario autenticado.
       const uid = userCredential.user?.uid;
 
+      // Obtener el documento del usuario actual para verificar roles existentes
+      const userDoc = await getDoc(doc(this._firestore, `users/${uid}`));
+      let roles = { cliente: true }; // Rol por defecto
+
+      // Si el documento del usuario ya existe, mantenemos los roles actuales
+      if (userDoc.exists()) {
+        const userData = userDoc.data() as User;
+        roles = { ...roles, ...userData.roles }; // Mantener roles existentes y agregar cliente
+      }
+
       // Estructuramos los datos del usuario que queremos guardar en Firestore, incluyendo el correo y los nombres.
       const userData = {
         uid, // UID del usuario proporcionado por Firebase Authentication
@@ -72,7 +82,7 @@ export class AuthService {
         displayName: `${user.firstName} ${user.lastName}`, //Nombre completo
         authMethod: 'email', //Método con el que se ha autenticado el usuario
         createdAt: new Date(), // Fecha de creación del registro del usuario
-        roles: { cliente: true }, //Se asigna rol de cliente por defecto
+        roles, //Se asigna rol de cliente por defecto
       };
 
       // Guardamos el objeto "userData" en Firestore bajo la colección "users", utilizando el UID como ID del documento.
@@ -156,12 +166,14 @@ export class AuthService {
       // Obtener el UID (Identificador Único) del usuario autenticado.
       const uid = userCredential.user?.uid;
 
-      // Obtener el documento del usuario actual para verificar roles existentes 
-      const userDoc = await getDoc(doc(this._firestore, `users/${uid}`)); let roles = { cliente: true }; // Rol por defecto
+      // Obtener el documento del usuario actual para verificar roles existentes
+      const userDoc = await getDoc(doc(this._firestore, `users/${uid}`));
+      let roles = { cliente: true }; // Rol por defecto
 
-      // Si el documento del usuario ya existe, mantenemos los roles actuales 
+      // Si el documento del usuario ya existe, mantenemos los roles actuales
       if (userDoc.exists()) {
-         const userData = userDoc.data() as User; roles = { ...roles, ...userData.roles}; // Mantener roles existentes y agregar cliente
+        const userData = userDoc.data() as User;
+        roles = { ...roles, ...userData.roles }; // Mantener roles existentes y agregar cliente
       }
       // Estructuramos los datos del usuario que queremos guardar en Firestore, incluyendo el correo y los nombres.
       const userData = {
@@ -264,4 +276,6 @@ export class AuthService {
       throw new Error('Error en submit');
     }
   }
+
+
 } // :)
