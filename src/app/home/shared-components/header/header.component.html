@@ -67,7 +67,7 @@
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
-          class="size-6 text-gray-500 dark:text-gray-100"
+          class="w-6 h-6 text-gray-500 dark:text-gray-100"
           viewBox="0 0 16 16"
         >
           <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
@@ -78,11 +78,11 @@
         </svg>
       </div>
       <ng-template #userProfile>
-        <div *ngIf="user?.photoURL; else showInitial" >
-          <img [src]="user?.photoURL" alt="Profile Photo" class="rounded-full size-6" />
+        <div *ngIf="user?.photoURL; else showInitial" class="flex items-center justify-center object-cover overflow-hidden w-6 h-6 rounded-full" >
+          <img [src]="user?.photoURL" alt="Profile Photo" />
         </div>
         <ng-template #showInitial>
-          <div class="bg-emerald-600 text-white text-sm font-sans rounded-full flex justify-center items-center size-6">
+          <div class="bg-emerald-600 text-white text-sm font-sans rounded-full  items-center w-6 h-6 overflow-hidden ">
             {{userInitial}}
           </div>
         </ng-template>

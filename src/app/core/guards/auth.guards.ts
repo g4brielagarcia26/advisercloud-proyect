@@ -32,7 +32,8 @@ export const privateGuard = (): CanActivateFn => {
           console.log(
             'Usuario autenticado pero no verificado, permitiendo acceso a /auth/send-email'
           );
-          if (targetUrl === '/auth/send-email') {
+          // **Permitir acceso a /send-email y /forgot-password**
+          if (targetUrl === '/auth/send-email' || targetUrl === '/auth/forgot-password') {
             return true;
           }
           return true;

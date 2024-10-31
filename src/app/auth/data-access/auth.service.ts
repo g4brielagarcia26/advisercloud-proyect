@@ -20,6 +20,7 @@ import {
   where,
 } from '@angular/fire/firestore';
 import { AuthStateService } from '../../shared/data-access/auth-state.service';
+import { FirebaseError } from '@angular/fire/app';
 
 // Definimos nuestra interfaz "User", que será utilizada para estructurar los datos del usuario.
 export interface User {
@@ -257,11 +258,24 @@ export class AuthService {
   async sendVerificationEmail(): Promise<void> {
     // Obtenemos el usuario autenticado actualmente
     const user = this._auth.currentUser;
-
-    // Verifica que exista un usuario autenticado antes de enviar el correo
     if (user) {
-      await sendEmailVerification(user);
+      try {
+        // Verifica que exista un usuario autenticado antes de enviar el correo
+        if (!user.emailVerified) {
+          await sendEmailVerification(user);
+          console.log('Correo de verificación enviado');
+        } else {
+          console.log('El correo electronico ya está verificado');
+        }
+      } catch (error) {
+        if ((error as FirebaseError).code === 'auth/too-many-requests') {
+          console.error('Se han enviado demasiadas solicitudes de verificación. Intenta de nuevo más tarde.');
+         } else {
+          console.error('Error enviando el correo de verificación:', error);
+        }
+      }
     } else {
+      console.log('No se encontró ningun usuario autenticado');
       throw new Error('No se encontró ningún usuario con estos datos.');
     }
   }
@@ -276,6 +290,4 @@ export class AuthService {
       throw new Error('Error en submit');
     }
   }
-
-
 } // :)
