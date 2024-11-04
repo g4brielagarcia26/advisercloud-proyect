@@ -14,6 +14,10 @@
   grid-area: header;
 }
 
+.sidebar {
+  grid-area: aside;
+}
+
 .content {
   grid-area: content;
 }
@@ -32,18 +36,13 @@
     grid-template-rows: 60px auto auto auto;
 }
 
-.sidebar {
-  grid-area: aside;
-}
-
 @media (min-width: 640px) {
-/* Layout con sidebar visible (cuando el usuario está autenticado) */
-.sidebar-visible {
-  grid-template-areas:
-    "aside header header header"
-    "aside content content content"
-    "aside footer footer footer";
-  grid-template-columns: 250px 1fr 1fr 1fr;
+  /* Layout con sidebar visible (cuando el usuario está autenticado) */
+  .sidebar-visible {
+    grid-template-areas:
+      "aside header header header"
+      "aside content content content"
+      "aside footer footer footer";
+    grid-template-columns: 230px 1fr 1fr 1fr;
+  }
 }
-
- }

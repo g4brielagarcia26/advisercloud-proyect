@@ -7,11 +7,13 @@ import { ToolDetailComponent } from '../tool-detail/tool-detail.component';
 import { map } from 'rxjs/operators';
 import { SearchService } from '../../shared-components/search/search.service';
 import { FiltersComponent } from '../../shared-components/filters/filters.component';
+import { AuthStateService } from '../../../shared/data-access/auth-state.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-tool-panel',
   standalone: true,
-  imports: [CommonModule, ToolDetailComponent, FiltersComponent],
+  imports: [CommonModule, ToolDetailComponent, FiltersComponent, RouterLink],
   templateUrl: './tool-panel.component.html',
   styleUrl: './tool-panel.component.css'
 })
@@ -20,15 +22,24 @@ export default class ToolPanelComponent {
   // Observable que contiene una lista de herramientas.
   // El operador '!' indica que esta propiedad será inicializada más adelante.
   tools!: Observable<ToolModel[]>;
-  
+
   // Observable que contiene una lista filtrada de herramientas según un término de búsqueda.
   filteredTools!: Observable<ToolModel[]>;
+
+  // Observable para el estado de autenticación
+  isAuthenticated$!: Observable<boolean>; 
 
   // Almacena la herramienta actualmente seleccionada. Inicialmente, es null.
   selectedTool: ToolModel | null = null;
 
   // Controla si el modal está visible o no. Inicialmente, es false (oculto).
   showModal = false;
+
+   // Variable para almacenar si el usuario es administrador o no
+   isAdmin: boolean = false; 
+
+   // Flag para la estrella
+   isStarClicked = false;
 
   // BehaviorSubject para gestionar el filtro seleccionado por los botones.
   private selectedFilter = new BehaviorSubject<string>('Todo');
@@ -38,13 +49,27 @@ export default class ToolPanelComponent {
 
   constructor(
     // Servicio para manejar datos relacionados con las herramientas
-    private toolService: ToolService, 
+    private toolService: ToolService,
     // Servicio para manejar la búsqueda de herramientas
-    private searchService: SearchService 
+    private searchService: SearchService,
+    // Servicio para manejar el estado de usuario
+    private authStateService: AuthStateService
   ) {
     // Inicializa los observables 'tools' y 'filteredTools' al crear la instancia del componente
     this.initializeTools();
     this.initializeFilteredTools();
+    // Se transforma el estado de usuario en un booleano
+    this.isAuthenticated$ = this.authStateService.authState$.pipe(
+      map(user => !!user) // Devuelve true si hay un usuario autenticado
+    );
+  }
+
+  ngOnInit(): void {
+    // Llama a verifyAdminRole para verificar si el usuario es administrador
+    this.authStateService.verifyAdminRole().subscribe(isAdmin => {
+      this.isAdmin = isAdmin;
+      // console.log("isAdmin:" + this.isAdmin);
+    });
   }
 
   // Configura el observable 'tools' para obtener la lista de herramientas del servicio ToolService.
@@ -58,14 +83,14 @@ export default class ToolPanelComponent {
             tool.logo = url;
           });
         }
-         // Devuelve la herramienta con el logo actualizado (si es aplicable)
+        // Devuelve la herramienta con el logo actualizado (si es aplicable)
         return tool;
       }))
     );
   }
 
-  private initializeFilteredTools() { 
-    
+  private initializeFilteredTools() {
+
     // Combina el observable de herramientas, el término de búsqueda y el filtro seleccionado.
     // Esto asegura que cada vez que cambie cualquiera de estos, el listado de herramientas se actualizará automáticamente.
     this.filteredTools = combineLatest([
@@ -78,13 +103,18 @@ export default class ToolPanelComponent {
       map(([tools, searchTerm, filter, subcategories]) => {
         let filtered = tools; // Se inicializa con el listado completo de herramientas.
 
+        // Normalizar el término de búsqueda
+        // Se elimina cualquier acento o diacrítico del término ingresado
+        const normalizedTerm = this.normalizeText(searchTerm.trim());
+
         // Filtrar por término de búsqueda.
-        // Si el término de búsqueda no está vacío, se filtra el listado de herramientas
-        // para mostrar solo aquellas cuyo nombre o detalle incluyen el término ingresado (ignorando mayúsculas/minúsculas).
-        if (searchTerm.trim()) {
+        // Si el término de búsqueda normalizado no está vacío, se filtra el listado de herramientas
+        // para mostrar solo aquellas cuyo nombre o detalle incluyan el término ingresado (sin importar mayúsculas/minúsculas o acentos).
+        // Filtrar por término de búsqueda
+        if (normalizedTerm) {
           filtered = filtered.filter(tool =>
-            tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            tool.detail.toLowerCase().includes(searchTerm.toLowerCase())
+            this.normalizeText(tool.name).toLowerCase().includes(normalizedTerm) ||
+            this.normalizeText(tool.detail).toLowerCase().includes(normalizedTerm)
           );
         }
 
@@ -118,6 +148,15 @@ export default class ToolPanelComponent {
         return filtered;
       })
     );
+  }
+
+  // Función para eliminar acentos
+  normalizeText(text: string): string {
+    return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+
+  clickStar() {
+    return this.isStarClicked = !this.isStarClicked;
   }
 
   // Método para actualizar el filtro de subcategorías

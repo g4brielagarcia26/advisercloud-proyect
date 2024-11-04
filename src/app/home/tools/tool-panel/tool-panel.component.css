@@ -5,6 +5,6 @@
         auto-fill, 
         minmax(260px, 1fr));
   gap: 24px;
-  grid-auto-rows: 170px; 
+  grid-auto-rows: 200px; 
   justify-items: center; /* Centra las tarjetas en la línea */ 
 }
