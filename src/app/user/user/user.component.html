@@ -29,6 +29,7 @@
       <p>Registrado con {{ userData.authMethod }}</p>
       <p class="text-gray-700 dark:text-gray-500">{{ userData.email }}</p>
       <p
+        *ngIf="!isReauthVisible" 
         class="text-emerald-600 cursor-pointer hover:underline mt-4"
         (click)="toggleEditProfile()"
       >
@@ -54,7 +55,6 @@
           type="file"
           (change)="onPhotoSelected($event)"
           class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-emerald-600 focus:border-emerald-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-          
         />
 
         <!-- Campo para cambiar el nombre -->
@@ -72,13 +72,16 @@
         <label class="block mb-2 text-gray-700 dark:text-gray-300"
           >Correo Electrónico:</label
         >
-        <input
+        <div class="relative w-full">
+          <input
           type="email"
           autocomplete="username"
           [(ngModel)]="userData.email"
           name="email"
           class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-emerald-600 focus:border-emerald-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
         />
+        <button (click)="sendVerificationEmail()" type="button" class="absolute inset-y-0 right-0 px-2 py-1 bg-emerald-600 text-white rounded hover:bg-emerald-500"> Verificar </button>
+        </div>
 
         <!-- Campo para cambiar la contraseña -->
         <label class="block mb-2 text-gray-700 dark:text-gray-300"
@@ -93,12 +96,14 @@
             class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-emerald-600 focus:border-emerald-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
             placeholder="Contraseña"
           />
-          @if(!isPasswordVisible) {
+
           <span
             (click)="showPassword()"
             class="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer text-gray-500 dark:text-gray-400"
           >
+            <!-- SVG para mostrar la contraseña -->
             <svg
+              *ngIf="!isPasswordVisible"
               class="w-5 h-5 cursor-pointer"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
@@ -112,13 +117,10 @@
                 d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"
               />
             </svg>
-          </span>
-          } @else {
-          <span
-            (click)="showPassword()"
-            class="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer text-gray-500 dark:text-gray-400"
-          >
+
+            <!-- SVG para ocultar la contraseña -->
             <svg
+              *ngIf="isPasswordVisible"
               class="w-5 h-5 cursor-pointer"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
@@ -136,7 +138,6 @@
               />
             </svg>
           </span>
-          }
         </div>
 
         <!-- Botones para guardar cambios o cancelar -->
@@ -157,5 +158,42 @@
         </div>
       </form>
     </div>
+
+      <!-- Formulario de reautenticación -->
+  <div *ngIf="isReauthVisible" class="w-full max-w-md p-4 rounded-lg border shadow-xl dark:bg-gray-800">
+    <h2 class="text-xl font-semibold text-center text-gray-700 dark:text-white">Reautenticación</h2>
+    <p class="mt-2 text-center text-gray-500 dark:text-gray-300">
+      Por favor, confirma tus credenciales para continuar.
+    </p>
+    <form (ngSubmit)="reauthenticate()">
+      <!-- Campo de correo -->
+      <label for="email" class="block mt-4 text-gray-700 dark:text-gray-300">Correo Electrónico:</label>
+      <input
+        type="email"
+        [(ngModel)]="reauthEmail"
+        name="reauthEmail"
+        id="email"
+        class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+        required
+      />
+
+      <!-- Campo de contraseña -->
+      <label for="password" class="block mt-4 text-gray-700 dark:text-gray-300">Contraseña:</label>
+      <input
+        type="password"
+        [(ngModel)]="reauthPassword"
+        name="reauthPassword"
+        id="password"
+        class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+        required
+      />
+
+      <!-- Botones de confirmar y cancelar -->
+      <div class="flex justify-end mt-4 space-x-2">
+        <button type="button" (click)="cancelReauth()" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-400">Cancelar</button>
+        <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-500">Confirmar</button>
+      </div>
+    </form>
+  </div>
   </div>
 </section>

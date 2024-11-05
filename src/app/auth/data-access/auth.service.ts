@@ -8,6 +8,11 @@ import {
   UserCredential,
   sendEmailVerification,
   sendPasswordResetEmail,
+  User as FirebaseUser,
+  updateProfile,
+  updateEmail,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
 } from '@angular/fire/auth';
 import {
   collection,
@@ -199,6 +204,16 @@ export class AuthService {
     }
   }
 
+  // Método para obtener el UID del usuario actualmente autenticado
+   getCurrentUserUID(): string { 
+    const currentUser = this._auth.currentUser; 
+    if (currentUser) { 
+      return currentUser.uid; 
+    } else { 
+      throw new Error('No user is currently authenticated.'); 
+    } 
+  }
+
   /**
    * Método en el que recoge los datos del usuario desde fireStore.
    * @param uid -El identificador único del usuario.
@@ -255,11 +270,17 @@ export class AuthService {
    * Método para enviar un correo de verificación al usuario.
    * @returns Una promesa que se resuelve cuando el correo es enviado.
    */
-  async sendVerificationEmail(): Promise<void> {
+  async sendVerificationEmail(email: string): Promise<void> {
     // Obtenemos el usuario autenticado actualmente
     const user = this._auth.currentUser;
     if (user) {
       try {
+        // Comprueba si el correo electrónico ya está registrado
+         const userExists = await this.checkUserExists(email); 
+         // Actualiza el correo electrónico solo si es diferente 
+         if (!userExists) { 
+          if (email !== user.email) { await updateEmail(user, email); }
+         }
         // Verifica que exista un usuario autenticado antes de enviar el correo
         if (!user.emailVerified) {
           await sendEmailVerification(user);
@@ -269,8 +290,10 @@ export class AuthService {
         }
       } catch (error) {
         if ((error as FirebaseError).code === 'auth/too-many-requests') {
-          console.error('Se han enviado demasiadas solicitudes de verificación. Intenta de nuevo más tarde.');
-         } else {
+          console.error(
+            'Se han enviado demasiadas solicitudes de verificación. Intenta de nuevo más tarde.'
+          );
+        } else {
           console.error('Error enviando el correo de verificación:', error);
         }
       }
@@ -288,6 +311,77 @@ export class AuthService {
       await sendPasswordResetEmail(this._auth, email);
     } catch (error) {
       throw new Error('Error en submit');
+    }
+  }
+
+  async updateProfile(updatedData: {
+    displayName?: string;
+    photoURL?: string;
+    email?: string;
+  }): Promise<void> {
+    const user = this._auth.currentUser as FirebaseUser | null;
+
+    if (user) {
+      try {
+        // Filtrar campos undefined
+        const dataToUpdate: any = {};
+        if (updatedData.displayName !== undefined) {
+          dataToUpdate.displayName = updatedData.displayName;
+        }
+        if (updatedData.photoURL !== undefined) {
+          dataToUpdate.photoURL = updatedData.photoURL;
+        }
+        if (updatedData.email !== undefined) {
+          dataToUpdate.email = updatedData.email;
+        }
+
+        // Actualiza el perfil del usuario
+        if (dataToUpdate.displayName || dataToUpdate.photoURL) {
+          await updateProfile(user, {
+            displayName: dataToUpdate.displayName || user.displayName,
+            photoURL: dataToUpdate.photoURL || user.photoURL,
+          });
+        }
+
+        // Actualiza el correo electrónico
+        if (dataToUpdate.email && dataToUpdate.email !== user.email) {
+          await updateEmail(user, dataToUpdate.email);
+          await sendEmailVerification(user);
+          throw new Error('Por favor, verifica tu nuevo correo electrónico');
+        }
+
+        // Guarda los cambios en Firestore
+        await setDoc(doc(this._firestore, `users/${user.uid}`), dataToUpdate, {
+          merge: true,
+        });
+        console.log('Perfil actualizado');
+      } catch (error) {
+        console.error('Error al actualizar el perfil:', error);
+        throw new Error('Error al actualizar el perfil');
+      }
+    } else {
+      throw new Error('No se encontró ningún usuario autenticado');
+    }
+  }
+
+  async reauthenticateWithCredential(
+    email: string,
+    password: string
+  ): Promise<void> {
+    const user = this._auth.currentUser as FirebaseUser | null;
+
+    if (user) {
+      const credential = EmailAuthProvider.credential(email, password);
+      try {
+        // Reautentica al usuario con la credencial proporcionada
+        await reauthenticateWithCredential(user, credential);
+        console.log('Reautenticación exitosa');
+      } catch (error) {
+        console.error('Error al reautenticar al usuario:', error);
+        throw new Error('Error al reautenticar al usuario');
+      }
+    } else {
+      throw new Error('No se encontró ningún usuario autenticado');
     }
   }
 } // :)

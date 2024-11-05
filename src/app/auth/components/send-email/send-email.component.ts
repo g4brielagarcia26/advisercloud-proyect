@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-send-email',
   standalone: true,
-  imports: [CommonModule,HeaderComponent],
+  imports: [CommonModule, HeaderComponent],
   templateUrl: './send-email.component.html',
 })
 export default class SendEmailComponent {
@@ -19,7 +19,7 @@ export default class SendEmailComponent {
   // Propiedades para manejar el estado del botón y el temporizador
   isButtonDisabled = false; // Controla si el botón está deshabilitado
   fillWidth = 0; // Controla el ancho de llenado visual del botón
-  private duration = 60; // Duración del temporizador en segundos
+  private duration = 0; // Duración del temporizador en segundos
 
   ngOnInit() {
     this.startTimer();
@@ -36,8 +36,12 @@ export default class SendEmailComponent {
     this.isButtonDisabled = true;
     this.fillWidth = 0;
     try {
-      // Enviar el correo de verificación utilizando el método del servicio
-      await this._authService.sendVerificationEmail();
+      const uid = this._authService.getCurrentUserUID();
+      const userData = await this._authService.getUserData(uid);
+      if (userData && userData.email) {
+        // Enviar el correo de verificación utilizando el método del servicio
+        await this._authService.sendVerificationEmail(userData.email);
+      }
     } catch (error) {
       // Manejar el error y mostrar un mensaje al usuario
       toast.error(
@@ -51,13 +55,14 @@ export default class SendEmailComponent {
   // Método para iniciar el temporizador
   private startTimer() {
     this.fillWidth = 0;
+    this.duration = 60;
     const interval = setInterval(() => {
       this.fillWidth += 100 / this.duration; // Aumenta el ancho de llenado en función del tiempo
       if (this.fillWidth >= 100) {
         clearInterval(interval); // Detiene el temporizador una vez que llega a 100%
         this.isButtonDisabled = false; // Habilita el botón después de 60 segundos
       }
-    },1000);// Cada 1000 ms (1 segundo)
+    }, 1000); // Cada 1000 ms (1 segundo)
     this.isButtonDisabled = true; // Desactiva el botón inicialmente al empezar el temporizador
   }
 }
