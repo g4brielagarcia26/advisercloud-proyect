@@ -2,11 +2,15 @@
   <!-- Contenedor del modal con altura máxima -->
   <div class="bg-white rounded-md shadow-lg w-4/5 md:w-1/2 xl:w-1/3 relative overflow-y-auto max-h-[calc(100vh-20px)] pb-6">
     
-    <!-- Cabecera -->
-    <div class="header w-full bg-gray-100 py-4 rounded-t-md flex items-center mb-6">
-      
-      <!-- Logo o icono a la izquierda -->
-      <div class="w-6 h-6 ml-4 my-4 text-gray-500">
+  <!-- Cabecera -->
+  <div class="header w-full bg-gray-100 py-4 rounded-t-md flex items-center mb-6">
+    
+    <div class="px-4 flex flex-col flex-grow"> 
+
+    <!-- Contenedor para logo y nombre en la misma fila -->
+    <div class="flex items-center mb-2">
+      <!-- Logo de la herramienta -->
+      <div class="w-6 h-6 text-gray-500 mr-2">
         <ng-container *ngIf="toolData">
           <img *ngIf="toolData?.logo" [src]="toolData?.logo" alt="{{ toolData?.name }}" class="w-6 h-6">
           <svg *ngIf="!toolData?.logo" xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-box" viewBox="0 0 16 16">
@@ -14,26 +18,70 @@
           </svg>
         </ng-container>
       </div>
-      
-      <!-- Contenedor para el nombre y botones -->
-      <div class="ml-4 flex flex-col flex-grow"> 
-        <h1 class="text-2xl font-bold text-left">{{ toolData?.name }}</h1>
-        
-        <!-- Botones de acción: Favoritos, Compartir, Añadir -->
-        <div class="flex items-center justify-between mt-3">
-          <div class="flex space-x-3">
-            <!-- Botón Favoritos -->
-            <button class="px-3 py-1 text-sm text-gray-700 bg-gray-200 rounded hover:bg-gray-300">Favoritos</button>
-            <!-- Botón Compartir -->
-            <button class="px-3 py-1 text-sm text-gray-700 bg-gray-200 rounded hover:bg-gray-300">Compartir</button>
-            <!-- Botón Añadir -->
-            <button class="px-3 py-1 text-sm text-gray-700 bg-gray-200 rounded hover:bg-gray-300">Añadir</button>
-          </div>
+
+      <!-- Nombre de la herramienta -->
+      <h1 id="toolName" class="text-2xl font-bold">{{ toolData?.name }}</h1>
+
+    </div>
+
+      <!-- Detalle de la herramienta -->
+      <p class="text-sm text-gray-600 mt-1">
+        {{ toolData?.detail }}
+      </p>
+
+      <!-- Precio -->
+      <h2 class="text-sm font-semibold text-emerald-700 mt-3">
+        {{ toolData?.price === 0 ? 'Gratis' : toolData?.price + '€/Mes' }}
+      </h2>
+
+
+
+      <!-- Botones de acción: Favoritos, Compartir, Añadir -->
+      <div class="flex items-center justify-between mt-3">
+        <div class="flex space-x-3">
+
+
           
-          <!-- Precio -->
-          <p class="text-sm font-semibold text-emerald-700 ml-auto">{{ toolData?.price === 0 ? 'Gratis' : toolData?.price + '€/Mes' }}</p>
+          <!-- Comprobación del precio para determinar qué botón mostrar -->
+          <ng-container *ngIf="toolData?.price === 0; else toBuyButton">
+            <!-- Botón "Descargar" si es gratuito -->
+            <button class="flex items-center px-3 py-1 text-sm text-gray-700 border border-gray-300 rounded hover:bg-gray-300 hover:text-emerald-600 hover:border-emerald-600">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cloud-download mr-2" viewBox="0 0 16 16">
+                <path d="M4.406 1.342A5.53 5.53 0 0 1 8 0c2.69 0 4.923 2 5.166 4.579C14.758 4.804 16 6.137 16 7.773 16 9.569 14.502 11 12.687 11H10a.5.5 0 0 1 0-1h2.688C13.979 10 15 8.988 15 7.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 2.825 10.328 1 8 1a4.53 4.53 0 0 0-2.941 1.1c-.757.652-1.153 1.438-1.153 2.055v.448l-.445.049C2.064 4.805 1 5.952 1 7.318 1 8.785 2.23 10 3.781 10H6a.5.5 0 0 1 0 1H3.781C1.708 11 0 9.366 0 7.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383"/>
+                <path d="M7.646 15.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 14.293V5.5a.5.5 0 0 0-1 0v8.793l-2.146-2.147a.5.5 0 0 0-.708.708z"/>
+              </svg>
+              Descargar
+            </button>
+          </ng-container>
+
+          <!-- Botón "comprar" si no es gratuito -->
+          <ng-template #toBuyButton>
+            <button class="flex items-center px-3 py-1 text-sm text-gray-700 bg-gray-200 rounded hover:bg-gray-300">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus mr-2" viewBox="0 0 16 16">
+                <path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9z"/>
+                <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+              </svg>
+              Comprar
+            </button>
+          </ng-template>
+
+
+
+          <!-- Botón Compartir -->
+          <button class="flex items-center px-3 py-1 text-sm text-gray-700 bg-gray-200 rounded hover:bg-gray-300">
+            <!-- SVG de Compartir -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share mr-2" viewBox="0 0 16 16">
+              <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3"/>
+            </svg>
+            Compartir
+          </button>
+
+          
         </div>
+
       </div>
+    </div>
+
 
       <!-- Botón de cerrar encima de la cabecera -->
       <div class="absolute top-2 right-2 cursor-pointer" (click)="close()">
@@ -54,8 +102,8 @@
         <!-- Lista dinámica de propiedades usando el array properties -->
         <ul class="grid grid-cols-2 gap-4 mb-6">
           <li *ngFor="let property of toolData?.properties" class="text-black-600 flex items-center text-sm">
-            <svg class="w-4 h-4 text-emerald-500 mr-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M16 2l-9.293 9.293L6 9.586 0 16h16V0z"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg mr-2 text-emerald-600" viewBox="0 0 16 16">
+              <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
             </svg>
             {{ property }}
           </li>
@@ -63,7 +111,6 @@
 
         <!-- Sección de Video -->
         <div class="video-section mb-6">
-          <h2 class="text-xl font-bold text-gray-800 mb-2">Sección de Video</h2>
           
           <!-- Si hay un video, mostrar el iframe -->
           <div *ngIf="toolData?.video; else noVideo" class="w-full">
@@ -88,8 +135,7 @@
         
         <!-- Sección de capturas -->
         <div class="captures-section mb-6">
-          <h2 class="text-xl font-bold text-gray-800 mb-2">Sección de Capturas</h2>
-          <div class="grid grid-cols-3 w-full h-50 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div *ngFor="let image of toolData?.images" class=" bg-gray-200 flex items-center justify-center overflow-hidden">
               <img [src]="image" alt="Captura" class="object-cover h-full w-full" />
             </div>
