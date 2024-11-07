@@ -5,10 +5,10 @@ export interface ToolModel {
     category: string;
     description: string;
     detail: string;
-    developedBy: string;
-    images: Array<string>
-    logo: string;
     id: string;
+    images: Array<string>
+    isFavorite: boolean;
+    logo: string;
     name: string;
     price: number;
     properties: Array<string>;

@@ -8,16 +8,21 @@ import { map } from 'rxjs/operators';
 import { SearchService } from '../../shared-components/search/search.service';
 import { FiltersComponent } from '../../shared-components/filters/filters.component';
 import { AuthStateService } from '../../../shared/data-access/auth-state.service';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
+import CreateComponent from '../../../user/admin/create/create.component';
+import ModifyComponent from "../../../user/admin/modify/modify.component";
+import DeleteComponent from '../../../user/admin/delete/delete.component';
 
 @Component({
   selector: 'app-tool-panel',
   standalone: true,
-  imports: [CommonModule, ToolDetailComponent, FiltersComponent, RouterLink],
+  imports: [CommonModule, ToolDetailComponent, FiltersComponent, RouterLink, RouterOutlet, CreateComponent, ModifyComponent, DeleteComponent],
   templateUrl: './tool-panel.component.html',
   styleUrl: './tool-panel.component.css'
 })
 export default class ToolPanelComponent {
+
+  modalType: 'detail' | 'create' | 'modify' | 'delete' | null = null;
 
   // Observable que contiene una lista de herramientas.
   // El operador '!' indica que esta propiedad será inicializada más adelante.
@@ -27,7 +32,7 @@ export default class ToolPanelComponent {
   filteredTools!: Observable<ToolModel[]>;
 
   // Observable para el estado de autenticación
-  isAuthenticated$!: Observable<boolean>; 
+  isAuthenticated$!: Observable<boolean>;
 
   // Almacena la herramienta actualmente seleccionada. Inicialmente, es null.
   selectedTool: ToolModel | null = null;
@@ -35,11 +40,8 @@ export default class ToolPanelComponent {
   // Controla si el modal está visible o no. Inicialmente, es false (oculto).
   showModal = false;
 
-   // Variable para almacenar si el usuario es administrador o no
-   isAdmin: boolean = false; 
-
-   // Flag para la estrella
-   isStarClicked = false;
+  // Almacenamos si el usuario es administrador o no.
+  isAdmin: boolean = false;
 
   // BehaviorSubject para gestionar el filtro seleccionado por los botones.
   private selectedFilter = new BehaviorSubject<string>('Todo');
@@ -62,6 +64,7 @@ export default class ToolPanelComponent {
     this.isAuthenticated$ = this.authStateService.authState$.pipe(
       map(user => !!user) // Devuelve true si hay un usuario autenticado
     );
+
   }
 
   ngOnInit(): void {
@@ -155,8 +158,10 @@ export default class ToolPanelComponent {
     return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   }
 
-  clickStar() {
-    return this.isStarClicked = !this.isStarClicked;
+  // Método para darle funcionalidad a la estrella
+  clickStar(toolId: string) {
+    // Obtiene la herramienta seleccionada por su ID
+    this.toolService.toggleFavorite(toolId).subscribe();
   }
 
   // Método para actualizar el filtro de subcategorías
@@ -173,17 +178,41 @@ export default class ToolPanelComponent {
   // Actualiza la herramienta seleccionada y muestra el modal.
   onToolSelected(tool: ToolModel) {
     this.selectedTool = tool; // Establece la herramienta seleccionada
-    this.openModal(); // Abre el modal
+    this.openModal('detail'); // Abre el modal
+  }
+
+  openCreateModal() {
+    this.openModal('create');
+  }
+
+  openModifyModal(tool: ToolModel) {
+    this.selectedTool = tool;  // Establece la herramienta seleccionada
+    this.openModal('modify');  // Abre el modal de modificación
+  }
+
+  deleteTool() {
+    if (this.selectedTool) {
+      this.toolService.deleteTool(this.selectedTool.id).subscribe(() => {
+        this.closeModal(); // Cierra el modal después de borrar
+      });
+    }
+  }
+  
+  openDeleteModal(tool: ToolModel) {
+    this.selectedTool = tool;  // Establece la herramienta seleccionada
+    this.openModal('delete');  // Abre el modal de eliminación
   }
 
   // Muestra el modal estableciendo la propiedad showModal en true
-  openModal() {
+ openModal(type: 'detail' | 'create' | 'modify' | 'delete') {
+    this.modalType = type;
     this.showModal = true;
   }
 
   // Oculta el modal y reinicia la herramienta seleccionada
   closeModal() {
-    this.showModal = false; // Oculta el modal
-    this.selectedTool = null; // Restablece la herramienta seleccionada a null
+    this.showModal = false;
+    this.selectedTool = null;
+    this.modalType = null;
   }
 }

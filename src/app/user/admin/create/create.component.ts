@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { ReactiveFormsModule, FormControl, FormGroup, FormArray, Validators} from '@angular/forms';
+import { Component, EventEmitter, Output } from '@angular/core';
+import { ReactiveFormsModule, FormControl, FormGroup, FormArray, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-create',
@@ -10,7 +10,12 @@ import { ReactiveFormsModule, FormControl, FormGroup, FormArray, Validators} fro
   styleUrl: './create.component.css'
 })
 export default class CreateComponent {
-  
+  @Output() closeModal = new EventEmitter<void>();
+
+  close() {
+    this.closeModal.emit();
+  }
+
   // Inicializar el FormGroup con todos los controles
   createToolForm = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -34,16 +39,15 @@ export default class CreateComponent {
   // Agregar una característica al presionar Enter
   addProperty(event: Event): void {
     event.preventDefault(); // Evita el comportamiento por defecto de Enter en un formulario
-  
+
     const value = this.propertyInput.value?.trim() || ''; // Usa '' si es null o undefined
-  
+
     if (value && this.properties.length < 6) {
-      this.properties.push(new FormControl(value));
       this.propertyInput.reset(); // Limpia el campo de entrada
     }
   }
 
-  // Eliminar una característica por índice
+  // // Eliminar una característica por índice
   removeProperty(index: number): void {
     this.properties.removeAt(index);
   }

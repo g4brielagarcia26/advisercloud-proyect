@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collectionData, collection } from '@angular/fire/firestore';
+import { Firestore, collectionData, collection, doc, getDoc, updateDoc, deleteDoc } from '@angular/fire/firestore';
 import { getStorage, ref, getDownloadURL } from '@angular/fire/storage';
 import { Observable, from } from 'rxjs';
 import { ToolModel } from '../tool-model/tool.model'; 
@@ -24,6 +24,32 @@ export class ToolService {
     // Devuelve un Observable de un array de ToolModel, lo que permite suscribirse a los datos y manejar cambios en tiempo real.
     return collectionData(toolsCollection, { idField: 'id' }) as Observable<ToolModel[]>;
   }
+
+  // Método para eliminar una herramienta
+  deleteTool(toolId: string): Observable<void> {
+    // Creamos una referencia al documento específico en Firestore
+    const toolDocRef = doc(this.firestore, `tools/${toolId}`);
+    // Utilizamos deleteDoc para eliminar el documento y convertimos la promesa en un Observable con `from`
+    return from(deleteDoc(toolDocRef));
+  }
+
+  // Método para alternar el estado favorito de una herramienta
+  toggleFavorite(toolId: string): Observable<void> {
+
+    // Creamos una referencia al documento específico en Firestore con doc()
+    const toolDocRef = doc(this.firestore, `tools/${toolId}`);
+
+    return from(getDoc(toolDocRef).then(docSnapshot => {
+      if (docSnapshot.exists()) {
+        const currentFavoriteStatus = docSnapshot.data()['isFavorite'] || false;
+        // Invertir el valor de isFavorite y actualizar en Firestore
+        return updateDoc(toolDocRef, { isFavorite: !currentFavoriteStatus });
+      } else {
+        throw new Error('El documento no existe');
+      }
+    }));
+  }
+  
 
   // Obtiene la URL de descarga de un archivo almacenado en Firebase Storage.
   getDownloadUrl(path: string): Observable<string> {

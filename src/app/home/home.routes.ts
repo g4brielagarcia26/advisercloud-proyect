@@ -15,7 +15,7 @@ export default [
       },
       {
         path:'tool-panel',
-        loadComponent: () => import('./tools/tool-panel/tool-panel.component')
+        loadComponent: () => import('./tools/tool-panel/tool-panel.component'),
       },
       {
         canActivate: [privateGuard()],

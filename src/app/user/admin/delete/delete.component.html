@@ -1,1 +1,63 @@
-<h1 class="flex items-center justify-center h-full dark:text-gray-100 text-3xl">Delete Component</h1>
+<div class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+  <!-- Contenedor del modal con altura máxima -->
+  <div class="bg-white rounded-md shadow-lg relative overflow-y-auto max-h-[calc(100vh-20px)] pb-6 w-full max-w-md mx-4">
+
+    <!-- Botón de cerrar encima de la cabecera -->
+    <div class="absolute top-2 right-2 cursor-pointer" (click)="close()">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-6 h-6 text-gray-500" viewBox="0 0 16 16">
+        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+      </svg>
+    </div>
+
+    <!-- Formulario para borrar -->
+    <div class="flex flex-col p-6 space-y-4 items-center">
+      <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-6 h-6 text-red-600" viewBox="0 0 16 16">
+          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
+        </svg>
+      </div>
+      <h2 class="text-gray-900 font-medium text-xl">¿Borrar Aplicación?</h2>
+      <div class="flex flex-col items-center text-md text-gray-600">
+        <p>¿Estás seguro de que quieres borrar {{ toolData?.name }}?</p>
+        <p>Esta acción no se puede deshacer</p>
+      </div>
+    </div>
+
+    <!-- Botones de acción -->
+    @if(!showConfirmation) {
+    <div class="w-full flex justify-around mt-4 px-6">
+      
+      <button class="flex-1 mr-2 py-2 border border-gray-400 text-gray-600 rounded-md hover:bg-gray-100 font-medium"
+      (click)="close()">
+        Cancelar
+      </button>
+      <button class="flex-1 ml-2 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 font-medium"
+      (click)="showConfirmation = true">
+        Borrar
+      </button>
+    </div>
+  }
+
+     <!-- Formulario de confirmación que aparece al hacer clic en "Borrar" -->
+    @if(showConfirmation) {
+      <div class=" px-6 text-gray-700">
+        <p class="mb-2 text-center">Escribe el nombre de la aplicación para confirmar</p>
+        <input type="text"
+               placeholder="{{ toolData?.name }}"
+               [(ngModel)]="enteredName"
+               class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none"/>
+  
+        <!-- Botón de confirmación final -->
+         <div class="">
+          <button
+            class="w-full mt-4 py-2 border border-gray-400 text-gray-600 rounded-md hover:bg-gray-100 font-medium disabled:bg-gray-200 disabled:border-none"
+            (click)="confirmDeletion()"
+            [disabled]="enteredName.trim() !== toolData?.name">
+          Confirmar
+        </button>
+         </div>
+        
+      </div>
+    }
+  </div>
+</div>

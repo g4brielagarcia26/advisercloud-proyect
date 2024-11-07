@@ -8,3 +8,33 @@
   grid-auto-rows: 200px; 
   justify-items: center; /* Centra las tarjetas en la línea */ 
 }
+
+
+/* Animación de la estrella */
+/* Estilos básicos del botón con ripple */
+.ripple-button {
+  position: relative;
+  overflow: hidden; /* Necesario para contener el efecto ripple dentro del botón */
+  border-radius: 50%; /* Se ajusta al contorno circular del botón */
+}
+
+/* Pseudo-elemento para el efecto ripple */
+.ripple-button::before {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  width: 100px; /* Tamaño del efecto ripple */
+  height: 100px;
+  background-color: rgba(252, 211, 77, 0.4); /* Color del efecto ripple */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0); /* Empieza pequeño */
+  opacity: 0;
+  transition: transform 0.4s ease, opacity 0.4s ease; /* Animación de transición */
+}
+
+/* Estado activo del efecto ripple */
+.ripple-button:active::before {
+  transform: translate(-50%, -50%) scale(1); /* Se expande al hacer clic */
+  opacity: 1; /* Se vuelve visible */
+}
