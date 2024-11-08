@@ -1,0 +1,10 @@
+/* Estilo para ocultar scrollbar en navegadores WebKit */
+.modal-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Estilo para ocultar scrollbar en Firefox */
+  .modal-scroll {
+    scrollbar-width: none;
+  }
+  

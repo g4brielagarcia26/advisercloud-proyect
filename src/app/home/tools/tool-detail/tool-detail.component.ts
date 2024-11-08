@@ -37,9 +37,9 @@ export class ToolDetailComponent {
     return ""; // Si no se encuentra un ID, devuelve una cadena vacía
   }
 
-
-
   close() {
     this.closeModal.emit();
   }
+
+  
 }
