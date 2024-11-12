@@ -35,14 +35,22 @@
 
         <div>
           <label class="block mb-1 ml-1 text-sm font-medium text-gray-900 dark:text-white">Características</label>
-          <div formArrayName="properties" c>
-            <input type="text" [formControl]="propertyInput" (keydown.enter)="addProperty($event)"
+          <div formArrayName="properties">
+            <input
+              type="text"
+              [formControl]="propertyInput"
+              (keydown.enter)="addProperty($event)"
               placeholder="Presiona Enter para agregar"
-              class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-1.5 resize-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
-            <span *ngFor="let property of properties.controls; let i = index" class="dark:text-white font-medium">
-              {{ property.value }}
-              <button type="button" (click)="removeProperty(i)">✕</button>
-            </span>
+              class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-1.5 resize-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+            />
+            
+            <!-- Lista de características agregadas -->
+            <ul class="list-disc pl-5 mt-2">
+              <li *ngFor="let property of properties.controls; let i = index" class="flex justify-between items-center dark:text-white font-medium">
+                {{ property.value }}
+                <button type="button" (click)="removeProperty(i)" class="ml-2 text-red-500 hover:text-red-700">✕</button>
+              </li>
+            </ul>
           </div>
         </div>
 
@@ -61,6 +69,7 @@
             <option value="frameworks">Frameworks</option>
             <option value="tools">Herramientas</option>
             <option value="ide">IDEs</option>
+            <option value="others">Otros</option>
             <option value="browsers">Navegadores</option>
           </select>
         </div>
@@ -74,18 +83,32 @@
 
         <!-- Campo para subir imagen -->
         <div>
-          <label for="images" class="block mb-1 ml-1 text-sm font-medium text-gray-900 dark:text-white">Subir
-            imagen</label>
-          <input type="file" id="images" accept="" formControlName="images" class="w-full">
+          <label for="images" class="block mb-1 ml-1 text-sm font-medium text-gray-900 dark:text-white">
+            Subir imágenes
+          </label>
+          <input 
+            type="file" 
+            id="images"
+            accept=".jpg, .jpeg, .png" 
+            class="w-full"
+            multiple
+            (change)="onFileSelected($event, 'images')"
+          />
         </div>
 
         <!-- Campo para subir imagen -->
         <div>
           <label for="logo" class="block mb-1 ml-1 text-sm font-medium text-gray-900 dark:text-white">Subir logo</label>
-          <input type="file" id="logo" accept="" formControlName="logo" class="w-full">
+          <input 
+            type="file" 
+            id="logo" 
+            accept=".svg, .png"  
+            class="w-full"            
+            (change)="onFileSelected($event, 'logos')"
+          >
         </div>
 
-        <button type="submit" class="mt-4 bg-blue-500 text-white p-2 rounded">Guardar</button>
+        <button type="button" class="mt-4 bg-blue-500 text-white p-2 rounded">Guardar</button>
       </form>
     </div>
 

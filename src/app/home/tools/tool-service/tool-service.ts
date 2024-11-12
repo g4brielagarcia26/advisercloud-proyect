@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Firestore, collectionData, collection, doc, getDoc, updateDoc, deleteDoc } from '@angular/fire/firestore';
-import { getStorage, ref, getDownloadURL } from '@angular/fire/storage';
-import { Observable, from } from 'rxjs';
-import { ToolModel } from '../tool-model/tool.model'; 
+import { getStorage, ref, getDownloadURL, uploadBytesResumable } from '@angular/fire/storage';
+import { Observable, catchError, from, of } from 'rxjs';
+import { ToolModel } from '../tool-model/tool.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,39 @@ export class ToolService {
   private storage = getStorage();
 
   // Inyecta Firestore para que esté disponible en la clase y pueda ser utilizado para interactuar con la base de datos.
-  constructor(private firestore: Firestore) {}
+  constructor(private firestore: Firestore) { }
+
+  // Método para subir archivos a Firebase Storage con un filePath dinámico
+  uploadFile(file: File, filePath: string): Observable<string> {
+    const fileRef = ref(this.storage, filePath); // Usamos filePath dinámico
+    const uploadTask = uploadBytesResumable(fileRef, file);
+
+    // Devolvemos un Observable que maneja el progreso, y devuelve la URL final
+    return new Observable((observer) => {
+      uploadTask.on(
+        'state_changed', // Maneja el progreso de la carga
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log('Progreso de la carga:', progress);
+        },
+        (error) => {
+          observer.error('Error al cargar el archivo: ' + error);
+        },
+        () => {
+          // Una vez cargado, obtenemos la URL del archivo subido
+          getDownloadURL(fileRef)
+            .then((url) => {
+              console.log('Archivo subido exitosamente. URL:', url);
+              observer.next(url); // Emitimos la URL del archivo
+              observer.complete();
+            })
+            .catch((error) => {
+              observer.error('Error al obtener la URL de descarga: ' + error);
+            });
+        }
+      );
+    });
+  }
 
   // Recupera la lista de herramientas desde la colección 'tools' en Firestore.
   getTools(): Observable<ToolModel[]> {
@@ -49,7 +81,6 @@ export class ToolService {
       }
     }));
   }
-  
 
   // Obtiene la URL de descarga de un archivo almacenado en Firebase Storage.
   getDownloadUrl(path: string): Observable<string> {
@@ -58,7 +89,7 @@ export class ToolService {
 
     // getDownloadURL(storageRef) Obtiene la URL de descarga para ese archivo.
     // from(...): Convierte la promesa devuelta por getDownloadURL en un Observable para un manejo reactivo.
-    return from(getDownloadURL(storageRef)); 
+    return from(getDownloadURL(storageRef));
   }
 
 } // :)

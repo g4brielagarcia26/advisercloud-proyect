@@ -15,7 +15,7 @@ export const appConfig: ApplicationConfig = {
     provideFirebaseApp(() => initializeApp({
       projectId: "advisercloud-project-a027e",
       appId: "1:883159671359:web:90af33a3f607438deb0e8a",
-      storageBucket: "advisercloud-project-a027e.appspot.com",
+      storageBucket: "gs://advisercloud-project-a027e.appspot.com",
       apiKey: "AIzaSyAzknXGpiaI4A_8nXstxHbGQ5dtnaAlhEo",
       authDomain: "advisercloud-project-a027e.firebaseapp.com",
       messagingSenderId: "883159671359"
