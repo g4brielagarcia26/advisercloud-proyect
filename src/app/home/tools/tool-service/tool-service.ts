@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collectionData, collection, doc, getDoc, updateDoc, deleteDoc } from '@angular/fire/firestore';
+import { Firestore, collectionData, collection, doc, getDoc, updateDoc, deleteDoc, setDoc } from '@angular/fire/firestore';
 import { getStorage, ref, getDownloadURL, uploadBytesResumable } from '@angular/fire/storage';
-import { Observable, catchError, from, of } from 'rxjs';
+import { Observable, catchError, from, map, of } from 'rxjs';
 import { ToolModel } from '../tool-model/tool.model';
 
 @Injectable({
@@ -26,7 +26,7 @@ export class ToolService {
         'state_changed', // Maneja el progreso de la carga
         (snapshot) => {
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log('Progreso de la carga:', progress);
+          //console.log('Progreso de la carga:', progress);
         },
         (error) => {
           observer.error('Error al cargar el archivo: ' + error);
@@ -35,7 +35,7 @@ export class ToolService {
           // Una vez cargado, obtenemos la URL del archivo subido
           getDownloadURL(fileRef)
             .then((url) => {
-              console.log('Archivo subido exitosamente. URL:', url);
+              //console.log('Archivo subido exitosamente. URL:', url);
               observer.next(url); // Emitimos la URL del archivo
               observer.complete();
             })
@@ -55,6 +55,25 @@ export class ToolService {
     // Recupera los datos de la colección, y { idField: 'id' } agrega el ID del documento como un campo en los objetos recuperados.
     // Devuelve un Observable de un array de ToolModel, lo que permite suscribirse a los datos y manejar cambios en tiempo real.
     return collectionData(toolsCollection, { idField: 'id' }) as Observable<ToolModel[]>;
+  }
+
+  // Añade una nueva herramienta a la colección 'tools' en Firestore.
+  addTool(tool: ToolModel): Observable<void> {
+    // Obtén la referencia a la colección `tools`
+    const toolsCollection = collection(this.firestore, 'tools');
+    const docRef = doc(toolsCollection); // Genera una referencia con ID único
+    const id = docRef.id; // Obtén el ID generado
+
+    // Añade el documento usando `setDoc` y convierte la promesa en un Observable
+    return from(
+      setDoc(docRef, { ...tool, id }) // Incluye el ID como parte del documento
+    ).pipe(
+      map(() => void 0), // Para devolver void
+      catchError((error) => {
+        console.error('Error al añadir la herramienta:', error);
+        throw error;
+      })
+    );
   }
 
   // Método para eliminar una herramienta

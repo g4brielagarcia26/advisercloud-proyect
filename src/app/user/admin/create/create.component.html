@@ -60,17 +60,34 @@
             class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
         </div>
 
+        <!--Categorías-->
+        <div>
+          <label class="text-sm font-medium">Categorías</label>
+          <div class="flex flex-col px-2 pt-3 text-gray-500">
+            <!--Todo-->
+            <div>
+              <input type="radio" id="todo" name="category" value="" checked>
+              <label for="todo" class="pl-2">Todo</label>
+            </div>
+            <!--Populares-->
+            <div>
+              <input type="radio" id="populares" name="category" value="populares">
+              <label for="populares" class="pl-2">Populares</label>
+            </div>
+          </div>
+        </div>
+
         <div>
           <label for="subcategory"
-            class="block mb-1 ml-1 text-sm font-medium text-gray-900 dark:text-white">Categoría</label>
+            class="block mb-1 ml-1 text-sm font-medium text-gray-900 dark:text-white">Subcategoría</label>
           <select id="subcategory" formControlName="subcategory"
             class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
             <option value="design">Diseño</option>
             <option value="frameworks">Frameworks</option>
             <option value="tools">Herramientas</option>
             <option value="ide">IDEs</option>
-            <option value="others">Otros</option>
             <option value="browsers">Navegadores</option>
+            <option value="others">Otros</option>
           </select>
         </div>
 
@@ -108,7 +125,7 @@
           >
         </div>
 
-        <button type="button" class="mt-4 bg-blue-500 text-white p-2 rounded">Guardar</button>
+        <button type="button" (click)="saveTool()" class="mt-4 bg-blue-500 text-white p-2 rounded" >Guardar</button>
       </form>
     </div>
 
