@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Firestore, collectionData, collection, doc, getDoc, updateDoc, deleteDoc, setDoc } from '@angular/fire/firestore';
-import { getStorage, ref, getDownloadURL, uploadBytesResumable } from '@angular/fire/storage';
-import { Observable, catchError, from, map, of } from 'rxjs';
+import { getStorage, ref, getDownloadURL, uploadBytesResumable, deleteObject } from '@angular/fire/storage';
+import { Observable, catchError, forkJoin, from, map, of, switchMap } from 'rxjs';
 import { ToolModel } from '../tool-model/tool.model';
 
 @Injectable({
@@ -76,12 +76,39 @@ export class ToolService {
     );
   }
 
-  // Método para eliminar una herramienta
+  // Método para eliminar la herramienta
   deleteTool(toolId: string): Observable<void> {
     // Creamos una referencia al documento específico en Firestore
     const toolDocRef = doc(this.firestore, `tools/${toolId}`);
     // Utilizamos deleteDoc para eliminar el documento y convertimos la promesa en un Observable con `from`
     return from(deleteDoc(toolDocRef));
+  }
+
+  // Método para eliminar el Storage
+  deleteFile(filePath: string): Observable<void> {
+    const fileRef = ref(this.storage, filePath);
+    return from(deleteObject(fileRef));
+  }
+
+  // Guarda la referencia de cada imagen en un array y luego procede a eliminar
+  // las imagenes para posteriormente eliminar el
+  deleteToolWithFiles(toolId: string, toolData: ToolModel): Observable<void> {
+    const deleteFiles$ = [];
+  
+    // Agregar el logo al array de eliminaciones si existe
+    if (toolData.logo) {
+      deleteFiles$.push(this.deleteFile(toolData.logo));
+    }
+  
+    // Agregar cada imagen al array de eliminaciones
+    toolData.images.forEach(imagePath => {
+      deleteFiles$.push(this.deleteFile(imagePath));
+    });
+  
+    // Combinar todas las eliminaciones de archivos con la eliminación del documento
+    return forkJoin(deleteFiles$).pipe(
+      switchMap(() => this.deleteTool(toolId)) // Eliminar el documento después de borrar los archivos
+    );
   }
 
   // Método para alternar el estado favorito de una herramienta
@@ -100,6 +127,8 @@ export class ToolService {
       }
     }));
   }
+
+  
 
   // Obtiene la URL de descarga de un archivo almacenado en Firebase Storage.
   getDownloadUrl(path: string): Observable<string> {

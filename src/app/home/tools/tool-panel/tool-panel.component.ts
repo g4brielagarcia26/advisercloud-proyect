@@ -8,15 +8,15 @@ import { map } from 'rxjs/operators';
 import { SearchService } from '../../shared-components/search/search.service';
 import { FiltersComponent } from '../../shared-components/filters/filters.component';
 import { AuthStateService } from '../../../shared/data-access/auth-state.service';
-import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
 import CreateComponent from '../../../user/admin/create/create.component';
 import ModifyComponent from "../../../user/admin/modify/modify.component";
 import DeleteComponent from '../../../user/admin/delete/delete.component';
+import { toast } from 'ngx-sonner';
 
 @Component({
   selector: 'app-tool-panel',
   standalone: true,
-  imports: [CommonModule, ToolDetailComponent, FiltersComponent, RouterLink, RouterOutlet, CreateComponent, ModifyComponent, DeleteComponent],
+  imports: [CommonModule, ToolDetailComponent, FiltersComponent, CreateComponent, ModifyComponent, DeleteComponent],
   templateUrl: './tool-panel.component.html',
   styleUrl: './tool-panel.component.css'
 })
@@ -192,8 +192,14 @@ export default class ToolPanelComponent {
 
   deleteTool() {
     if (this.selectedTool) {
-      this.toolService.deleteTool(this.selectedTool.id).subscribe(() => {
-        this.closeModal(); // Cierra el modal después de borrar
+      this.toolService.deleteToolWithFiles(this.selectedTool.id, this.selectedTool).subscribe({
+        next: () => {
+          toast.success('Herramienta eliminada correctamente.');
+          this.closeModal(); // Cierra el modal de confirmación
+        },
+        error: () => {
+          toast.error('Hubo un error al eliminar la herramienta.');
+        }
       });
     }
   }

@@ -1,11 +1,11 @@
 <div class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
   <!-- Contenedor del modal con altura máxima -->
   <div
-    class="relative bg-white rounded-md shadow-lg w-4/5 md:w-1/2 xl:w-1/3 overflow-y-auto max-h-[calc(100vh-20px)] pb-6">
+    class="bg-white rounded-md shadow-lg w-4/5 md:w-1/2 xl:w-1/3 relative overflow-y-auto max-h-[calc(100vh-20px)] dark:bg-gray-800">
 
     <!-- Botón de cerrar encima de la cabecera -->
     <div class="absolute top-2 right-2 cursor-pointer" (click)="close()">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-6 h-6 text-gray-500" viewBox="0 0 16 16">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-6 h-6 text-gray-500 dark:text-gray-200" viewBox="0 0 16 16">
         <path
           d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
       </svg>
@@ -14,18 +14,21 @@
     <div class="">
       <form class="p-10 space-y-3" [formGroup]="createToolForm">
 
+        <!-- Nombre -->
         <div>
           <label for="name" class="block mb-1 ml-1 text-sm font-medium text-gray-900 dark:text-white">Nombre</label>
           <input type="text" id="name" formControlName="name"
             class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
         </div>
-
+        
+        <!-- Detalle -->
         <div>
           <label for="detail" class="block mb-1 ml-1 text-sm font-medium text-gray-900 dark:text-white">Detalle</label>
           <textarea id="detail" formControlName="detail"
             class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-1.5 resize-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"></textarea>
         </div>
 
+        <!-- Descripción -->
         <div>
           <label for="description"
             class="block mb-1 ml-1 text-sm font-medium text-gray-900 dark:text-white">Descripción</label>
@@ -33,6 +36,7 @@
             class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-1.5 resize-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"></textarea>
         </div>
 
+        <!-- Propiedades -->
         <div>
           <label class="block mb-1 ml-1 text-sm font-medium text-gray-900 dark:text-white">Características</label>
           <div formArrayName="properties">
@@ -56,22 +60,27 @@
 
         <div>
           <label for="price" class="block mb-1 ml-1 text-sm font-medium text-gray-900 dark:text-white">Precio</label>
-          <input type="number" id="price" formControlName="price"
+          <input 
+            type="number" 
+            id="price" 
+            formControlName="price"
+            min="0"
+            (input)="checkPrice($event)" 
             class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
         </div>
 
         <!--Categorías-->
         <div>
-          <label class="text-sm font-medium">Categorías</label>
-          <div class="flex flex-col px-2 pt-3 text-gray-500">
+          <label class="text-sm font-medium text-gray-900 dark:text-white">Categorías</label>
+          <div class="flex flex-col px-2 pt-3 text-gray-500 dark:text-gray-200">
             <!--Todo-->
             <div>
-              <input type="radio" id="todo" name="category" value="" checked>
+              <input type="radio" id="todo" name="category" formControlName="category" value="" checked>
               <label for="todo" class="pl-2">Todo</label>
             </div>
             <!--Populares-->
             <div>
-              <input type="radio" id="populares" name="category" value="populares">
+              <input type="radio" id="populares" name="category" formControlName="category" value="populares">
               <label for="populares" class="pl-2">Populares</label>
             </div>
           </div>
@@ -86,7 +95,7 @@
             <option value="frameworks">Frameworks</option>
             <option value="tools">Herramientas</option>
             <option value="ide">IDEs</option>
-            <option value="browsers">Navegadores</option>
+            <option value="browser">Navegadores</option>
             <option value="others">Otros</option>
           </select>
         </div>
@@ -97,37 +106,47 @@
             class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
         </div>
 
-
+      <div class="space-y-6 pt-3 pb-1">
         <!-- Campo para subir imagen -->
         <div>
-          <label for="images" class="block mb-1 ml-1 text-sm font-medium text-gray-900 dark:text-white">
+          <label for="images" class="px-4 py-2 rounded-md border border-gray-200 shadow text-gray-500 hover:bg-gray-100 text-sm font-medium dark:text-gray-50 dark:hover:bg-slate-700 cursor-pointer">
             Subir imágenes
           </label>
           <input 
             type="file" 
             id="images"
             accept=".jpg, .jpeg, .png" 
-            class="w-full"
+            class="hidden"
             multiple
             (change)="onFileSelected($event, 'images')"
           />
+          <span class="text-gray-900 dark:text-gray-50 px-2 my-2 block font-medium text-sm">
+            {{ imageMessage }}
+          </span>
         </div>
 
-        <!-- Campo para subir imagen -->
+        <!-- Campo para subir el logo-->
         <div>
-          <label for="logo" class="block mb-1 ml-1 text-sm font-medium text-gray-900 dark:text-white">Subir logo</label>
+          <label for="logo" class="px-8 py-2 rounded-md border border-gray-200 shadow text-gray-500 hover:bg-gray-100 text-sm font-medium dark:text-gray-50 dark:hover:bg-slate-700 cursor-pointer">Subir logo</label>
           <input 
             type="file" 
             id="logo" 
             accept=".svg, .png"  
-            class="w-full"            
+            class="hidden"            
             (change)="onFileSelected($event, 'logos')"
           >
+          <span class="text-gray-900 dark:text-gray-50 px-2 my-2 block font-medium text-sm">
+            {{ logoMessage }}
+          </span>
         </div>
+      </div>
 
-        <button type="button" (click)="saveTool()" class="mt-4 bg-blue-500 text-white p-2 rounded" >Guardar</button>
+      <div class="flex items-center justify-center">
+        <button type="button" (click)="saveTool()" 
+        class="w-full bg-emerald-600 text-white p-2 rounded">
+        Guardar</button>
+      </div>
       </form>
     </div>
-
   </div>
 </div>

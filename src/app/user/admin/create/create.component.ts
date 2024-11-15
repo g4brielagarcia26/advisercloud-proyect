@@ -20,9 +20,12 @@ export default class CreateComponent {
   // Estructuras temporales para almacenar archivos seleccionados
   selectedImages: File[] = [];
   selectedLogo: File | null = null;
+  logoMessage: string = '';
+  imageMessage: string = '';
 
   // Inicializar el FormGroup con todos los controles
   createToolForm = new FormGroup({
+    category: new FormControl(''),
     name: new FormControl('', Validators.required),
     detail: new FormControl(''),
     description: new FormControl(''),
@@ -35,7 +38,7 @@ export default class CreateComponent {
   });
 
   propertyInput = new FormControl('');
-
+  
   constructor(
     private toolService: ToolService
   ) {}
@@ -65,6 +68,14 @@ export default class CreateComponent {
     this.closeModal.emit();
   }
 
+  checkPrice(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (Number(input.value) < 0) {
+      input.value = '0';
+      this.createToolForm.patchValue({ price: 0 }); // Sincroniza el formulario con el valor corregido
+    }
+  }
+
   // Validaciones para las imágenes y los logos
   onFileSelected(event: Event, field: string) {
 
@@ -73,7 +84,11 @@ export default class CreateComponent {
     // (!input.files) Valida que la propiedad files existe.
     // (fileSelected.length === 0) Valida que hay archivos dentro del objeto files. 
     if (!input.files || input.files.length === 0) {
-      toast.error("No has seleccionado ningun archivo.");
+      if (field === 'logos') {
+        this.logoMessage = 'No has seleccionado ningún archivo.';
+      } else if (field === 'images') {
+        this.imageMessage = 'No has seleccionado ningún archivo.';
+      }
       return;
     }
 
@@ -91,8 +106,9 @@ export default class CreateComponent {
         return;
       }
 
-      // Almacena el archivo en la variable temporal
+      // Almacena el archivo y mensaje de éxito
       this.selectedLogo = file;
+      this.logoMessage = `Archivo seleccionado correctamente.`;
 
     } else if (field === 'images') {
 
@@ -120,8 +136,11 @@ export default class CreateComponent {
     // Almacena solo los archivos válidos en la variable temporal
     if (validFiles.length > 0) {
       this.selectedImages = validFiles;
+      this.imageMessage = `Archivos seleccionados correctamente.`;
+      // this.imageMessage = `Archivos válidos seleccionados: ${validFiles.map(f => f.name).join(', ')}`;
     } else {
       this.selectedImages = []; // Limpia la lista si ninguna imagen es válida
+      this.imageMessage = 'No se seleccionaron imágenes válidas.';
     }
   }
 }
@@ -166,6 +185,12 @@ export default class CreateComponent {
     // Verifica si el formulario es válido
     if (this.createToolForm.invalid) {
       toast.error("Por favor, completa todos los campos requeridos.");
+      return;
+    }
+
+    // Verifica que los inputs de las imagenes no esten vacios
+    if (this.selectedImages.length === 0 && !this.selectedLogo) {
+      toast.error("Por favor, debes subir las imágenes y el logo para continuar.");
       return;
     }
 
@@ -231,7 +256,7 @@ export default class CreateComponent {
       images: this.createToolForm.get('images')?.value || [],
       logo: this.createToolForm.get('logo')?.value || '',
       isFavorite: false,
-      category: '',
+      category: this.createToolForm.get('category')?.value || '',
     };
   }
 }
