@@ -103,13 +103,17 @@
 <!-- Modal -->
 @if (showModal) {
   @if (modalType === 'detail') {
-    <app-tool-detail [toolData]="selectedTool" (closeModal)="closeModal()"></app-tool-detail>
+    <app-tool-detail 
+      [toolData]="selectedTool" 
+      (closeModal)="closeModal()"></app-tool-detail>
   }
   @if (modalType === 'create') {
     <app-create (closeModal)="closeModal()"></app-create>
   }
   @if (modalType === 'modify') {
-    <app-modify (closeModal)="closeModal()"></app-modify>
+    <app-modify 
+      [toolData]="selectedTool"
+      (closeModal)="closeModal()"></app-modify>
   }
   @if (modalType === 'delete') {
     <app-delete 
