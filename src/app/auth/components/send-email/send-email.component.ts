@@ -36,12 +36,9 @@ export default class SendEmailComponent {
     this.isButtonDisabled = true;
     this.fillWidth = 0;
     try {
-      const uid = this._authService.getCurrentUserUID();
-      const userData = await this._authService.getUserData(uid);
-      if (userData && userData.email) {
         // Enviar el correo de verificación utilizando el método del servicio
-        await this._authService.sendVerificationEmail(userData.email);
-      }
+        await this._authService.sendVerificationEmail();
+
     } catch (error) {
       // Manejar el error y mostrar un mensaje al usuario
       toast.error(

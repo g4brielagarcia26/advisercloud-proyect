@@ -120,7 +120,7 @@ export default class SignUpComponent {
       toast.success('Usuario creado correctamente.'); // Mensaje de éxito
 
       // Envía el correo de verificación
-      await this._authService.sendVerificationEmail(email);
+      await this._authService.sendVerificationEmail();
       toast.success('Correo de verificación enviado.');
 
       // Redirige al componente de verificación de correo

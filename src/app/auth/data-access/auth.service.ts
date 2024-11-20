@@ -10,22 +10,26 @@ import {
   sendPasswordResetEmail,
   User as FirebaseUser,
   updateProfile,
-  updateEmail,
   reauthenticateWithCredential,
   EmailAuthProvider,
+  verifyBeforeUpdateEmail,
+  AuthCredential,
 } from '@angular/fire/auth';
 import {
   collection,
   doc,
+  docData,
   Firestore,
   getDoc,
   getDocs,
   query,
   setDoc,
+  updateDoc,
   where,
 } from '@angular/fire/firestore';
 import { AuthStateService } from '../../shared/data-access/auth-state.service';
 import { FirebaseError } from '@angular/fire/app';
+import { map, Observable } from 'rxjs';
 
 // Definimos nuestra interfaz "User", que será utilizada para estructurar los datos del usuario.
 export interface User {
@@ -47,10 +51,17 @@ export interface User {
   providedIn: 'root', // Esto indica que este servicio está disponible globalmente en toda la aplicación.
 })
 export class AuthService {
+  currentUser: FirebaseUser | null = null; // Variable para almacenar los datos del usuario autenticado.
   // Inyectamos los servicios de autenticación y Firestore de Firebase mediante la función "inject".
   private _auth = inject(Auth);
   private _authState = inject(AuthStateService);
   private _firestore = inject(Firestore);
+
+  constructor() {
+    this._auth.onAuthStateChanged((user) => {
+      this.currentUser = user;
+    });
+  }
 
   /**
    * Método para registrar un nuevo usuario en Firebase Authentication y guardar los datos del usuario en Firestore.
@@ -126,21 +137,24 @@ export class AuthService {
       );
 
       // Obtener el usuario autenticado
-      const currentUser = userCredential.user;
-      console.log('Usuario autenticado:', currentUser);
+      this.currentUser = userCredential.user;
+      console.log('Usuario autenticado:', this.currentUser);
 
       // Verificar si el correo ha sido verificado
-      if (!currentUser.emailVerified) {
-        console.log('Correo no verificado para el usuario:', currentUser.email);
+      if (!this.currentUser.emailVerified) {
+        console.log(
+          'Correo no verificado para el usuario:',
+          this.currentUser.email
+        );
         // Si el correo no está verificado, lanza un error
         throw new Error('Correo no verificado.');
       }
 
       // Llama al método para actualizar el estado de autenticación.
-      this._authState.setUserState(currentUser);
+      this._authState.setUserState(this.currentUser);
       console.log(
         'Estado de usuario actualizado en AuthStateService:',
-        currentUser
+        this.currentUser
       );
 
       // Si el correo está verificado, retornar las credenciales
@@ -204,38 +218,23 @@ export class AuthService {
     }
   }
 
-  // Método para obtener el UID del usuario actualmente autenticado
-   getCurrentUserUID(): string { 
-    const currentUser = this._auth.currentUser; 
-    if (currentUser) { 
-      return currentUser.uid; 
-    } else { 
-      throw new Error('No user is currently authenticated.'); 
-    } 
-  }
-
   /**
    * Método en el que recoge los datos del usuario desde fireStore.
    * @param uid -El identificador único del usuario.
    * @returns -Una promesa que se resuelve con los datos del usuario como un objeto de tipo User, o null si el usuario no existe.
    */
-  async getUserData(uid: string): Promise<User | null> {
-    try {
-      const userDoc = await getDoc(doc(this._firestore, `users/${uid}`));
-      if (userDoc.exists()) {
-        const userData = userDoc.data() as User;
-        if (userData.displayName) {
+  getUserData(uid: string): Observable<User | null> {
+    const userDocRef = doc(this._firestore, `users/${uid}`);
+    return docData(userDocRef).pipe(
+      map((userData: any) => {
+        if (userData) {
           userData.initial = this.getInitial(userData.displayName);
+          return userData as User;
+        } else {
+          return null;
         }
-        return userData;
-      } else {
-        return null;
-      }
-    } catch (error) {
-      throw new Error(
-        'Error al obtener los datos del usuario: ' + (error as Error).message
-      );
-    }
+      })
+    );
   }
 
   /**
@@ -243,7 +242,7 @@ export class AuthService {
    * @param name -El nombre del cual se quiere obtener la inicial.
    * @returns -La inicial del nombre en mayúsculas.
    */
-  getInitial(name: string): string {
+ private getInitial(name: string): string {
     return name.charAt(0).toUpperCase();
   }
 
@@ -270,23 +269,14 @@ export class AuthService {
    * Método para enviar un correo de verificación al usuario.
    * @returns Una promesa que se resuelve cuando el correo es enviado.
    */
-  async sendVerificationEmail(email: string): Promise<void> {
+  async sendVerificationEmail(): Promise<void> {
     // Obtenemos el usuario autenticado actualmente
     const user = this._auth.currentUser;
     if (user) {
       try {
-        // Comprueba si el correo electrónico ya está registrado
-         const userExists = await this.checkUserExists(email); 
-         // Actualiza el correo electrónico solo si es diferente 
-         if (!userExists) { 
-          if (email !== user.email) { await updateEmail(user, email); }
-         }
         // Verifica que exista un usuario autenticado antes de enviar el correo
         if (!user.emailVerified) {
           await sendEmailVerification(user);
-          console.log('Correo de verificación enviado');
-        } else {
-          console.log('El correo electronico ya está verificado');
         }
       } catch (error) {
         if ((error as FirebaseError).code === 'auth/too-many-requests') {
@@ -314,74 +304,60 @@ export class AuthService {
     }
   }
 
-  async updateProfile(updatedData: {
-    displayName?: string;
-    photoURL?: string;
-    email?: string;
-  }): Promise<void> {
-    const user = this._auth.currentUser as FirebaseUser | null;
 
-    if (user) {
-      try {
-        // Filtrar campos undefined
-        const dataToUpdate: any = {};
-        if (updatedData.displayName !== undefined) {
-          dataToUpdate.displayName = updatedData.displayName;
-        }
-        if (updatedData.photoURL !== undefined) {
-          dataToUpdate.photoURL = updatedData.photoURL;
-        }
-        if (updatedData.email !== undefined) {
-          dataToUpdate.email = updatedData.email;
-        }
 
-        // Actualiza el perfil del usuario
-        if (dataToUpdate.displayName || dataToUpdate.photoURL) {
-          await updateProfile(user, {
-            displayName: dataToUpdate.displayName || user.displayName,
-            photoURL: dataToUpdate.photoURL || user.photoURL,
-          });
-        }
+  async updateProfile(updatedData: { displayName?: string; photoURL?: string; newEmail?: string }): Promise<void> {
+    if (this.currentUser) {
+      const updates: { displayName?: string; photoURL?: string; email?: string } = {};
 
-        // Actualiza el correo electrónico
-        if (dataToUpdate.email && dataToUpdate.email !== user.email) {
-          await updateEmail(user, dataToUpdate.email);
-          await sendEmailVerification(user);
-          throw new Error('Por favor, verifica tu nuevo correo electrónico');
-        }
+      if (updatedData.displayName) updates.displayName = updatedData.displayName;
+      if (updatedData.photoURL) updates.photoURL = updatedData.photoURL;
 
-        // Guarda los cambios en Firestore
-        await setDoc(doc(this._firestore, `users/${user.uid}`), dataToUpdate, {
-          merge: true,
-        });
-        console.log('Perfil actualizado');
-      } catch (error) {
-        console.error('Error al actualizar el perfil:', error);
-        throw new Error('Error al actualizar el perfil');
+     
+    
+
+       // **Manejo del cambio de correo electrónico**
+       if (updatedData.newEmail) {
+        await verifyBeforeUpdateEmail(this.currentUser, updatedData.newEmail);
+        console.log('Correo de verificación enviado para el cambio de email.');
       }
+
+       // **Actualización del perfil en Firebase Authentication**
+       await updateProfile(this.currentUser, updates);
+
+        // **Recarga del usuario después de los cambios**
+    await this.currentUser.reload(); 
+
+      // **Sincronización con Firestore**
+      const userDocRef = doc(this._firestore, `users/${this.currentUser.uid}`);
+      const firestoreUpdates = {
+        ...updates,
+        email: this.currentUser.email, 
+      };
+      await updateDoc(userDocRef, firestoreUpdates);
+
+      
+      console.log('Perfil actualizado en Firebase y Firestore');
     } else {
-      throw new Error('No se encontró ningún usuario autenticado');
+      throw new Error('No hay usuario autenticado');
     }
   }
 
-  async reauthenticateWithCredential(
-    email: string,
-    password: string
-  ): Promise<void> {
-    const user = this._auth.currentUser as FirebaseUser | null;
+  async reauthenticateWithCredential(password: string): Promise<void> {
+    if (!this.currentUser) {
+      throw new Error('No hay usuario autenticado');
+    }
+    const credential = EmailAuthProvider.credential(this.currentUser.email!, password);
+    await reauthenticateWithCredential(this.currentUser, credential);
+    console.log('Reautenticación exitosa');
+  }
 
-    if (user) {
-      const credential = EmailAuthProvider.credential(email, password);
-      try {
-        // Reautentica al usuario con la credencial proporcionada
-        await reauthenticateWithCredential(user, credential);
-        console.log('Reautenticación exitosa');
-      } catch (error) {
-        console.error('Error al reautenticar al usuario:', error);
-        throw new Error('Error al reautenticar al usuario');
-      }
+  async verifyBeforeUpdateEmail(newEmail: string): Promise<void> {
+    if (this.currentUser) {
+      await verifyBeforeUpdateEmail(this.currentUser, newEmail);
+      console.log('Correo electrónico actualizado correctamente');
     } else {
-      throw new Error('No se encontró ningún usuario autenticado');
+      throw new Error('No hay usuario autenticado');
     }
   }
 } // :)

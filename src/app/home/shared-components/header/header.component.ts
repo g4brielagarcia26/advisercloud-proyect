@@ -18,7 +18,7 @@ import { SearchService } from '../search/search.service';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule ,RouterOutlet, RouterLink, NgClass, SidebarComponent],
+  imports: [CommonModule, RouterLink, NgClass],
   templateUrl: './header.component.html',
 })
 export class HeaderComponent {
@@ -103,7 +103,7 @@ export class HeaderComponent {
       });
   }
  
-  // Cambio
+ 
 
   // Método para manejar eventos de búsqueda en el componente.
 onSearch(event: Event): void {
@@ -128,7 +128,7 @@ onSearch(event: Event): void {
  */
   loadUserInitial() {
     if (this.user) {
-      this._authService.getUserData(this.user.uid).then((userData) => {
+      this._authService.getUserData(this.user.uid).subscribe((userData) => {
         if (userData) {
           this.userInitial = userData.initial || '';
         }
