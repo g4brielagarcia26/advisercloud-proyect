@@ -2,6 +2,8 @@ import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { ToolModel } from '../tool-model/tool.model';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { AuthStateService } from '../../../shared/data-access/auth-state.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-tool-detail',
@@ -10,11 +12,27 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
   templateUrl: './tool-detail.component.html',
   styleUrl: './tool-detail.component.css'
 })
+
 export class ToolDetailComponent {
   @Input() toolData: ToolModel| null = null;  
   @Output() closeModal = new EventEmitter<void>();
 
   sanitizer = inject(DomSanitizer); // Inyecta DomSanitizer que permite marcar una URL como segura para ser usada en un iframe, evitando problemas de seguridad.
+
+  
+
+  private authStateService = inject(AuthStateService); // Inyecta el servicio para manejar autenticación
+  private router = inject(Router); // Inyecta el router para redirecciones
+
+  isAuthenticated = false; // Estado de autenticación del usuario
+
+  constructor() {
+    // Suscripción al estado de autenticación
+    this.authStateService.authState$.subscribe((user) => {
+      this.isAuthenticated = !!user && !!user.emailVerified;
+    });
+  }
+  
 
   // Función para transformar la URL de YouTube en una URL segura para usar en un iframe
   getEmbedUrl(video: string): SafeResourceUrl { //Recibe una url, que en este caso es la URL normal del video en YouTube
@@ -41,5 +59,27 @@ export class ToolDetailComponent {
     this.closeModal.emit();
   }
 
+
+
+  //Maneja las acciones de "Comprar" o "Descargar".
+
+  handleAction(action: 'comprar' | 'descargar'): void {
+    if (!this.isAuthenticated) {
+      console.log('Usuario no autenticado. Redirigiendo al login.');
+      this.router.navigate(['/auth/log-in']);
+    } else {
+      console.log(`Ejecutando acción: ${action}`);
+      if (action === 'comprar') {
+        // Lógica para comprar
+        console.log('Redirigiendo a la página de compra...');
+        this.router.navigate(['/comprar']);
+        //Ahora redigiría a la plataforma de pago
+      } else if (action === 'descargar') {
+        // Lógica para descargar
+        console.log('Descargando herramienta...');
+      }
+    }
+  }
+   
   
 }
